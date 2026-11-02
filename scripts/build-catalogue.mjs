@@ -186,6 +186,15 @@ const valueThbByName = {
   'Kidzania Bangkok ฿400 Off Admission': 400,
 };
 
+/** Brands whose offers make sense as a gift — feeds the gifting search story. */
+const giftBrands = new Set([
+  'Pandora', 'Charles & Keith', 'Coach', 'Central Chidlom Luxury Hall', 'Sephora', 'Central Beauty Galerie', 'Estée Lauder', 'Lancôme', 'Clinique', 'Shiseido', "Kiehl's",
+  'Starbucks', 'Mister Donut', 'After You', 'Cold Stone Creamery', "Swensen's", 'Brown Cafe', 'Segafredo',
+  'Muji', 'B2S', 'Central Kids', 'Mothercare', 'Kidzania Bangkok', 'SEA LIFE Bangkok', 'Dream World',
+  'Cenvaree Spa', 'Centara Grand Ladprao', 'COSI Samui', 'Centara Hua Hin', 'Major Cineplex', 'SF Cinema', 'Thai Ticket Major', 'EDC Thailand 2026',
+  'Central Department Store', 'Central Online', 'Robinson', 'Power Buy', 'Dyson', 'Samsung', 'Lyn', 'Jaspal',
+]);
+
 function deriveTitle(r) {
   const name = r.name;
   const brand = r.brand;
@@ -288,7 +297,7 @@ function toOffer(r, overrides = {}) {
     validUntil: r.valid_until,
     storeFormat: storeFormatByBrand[r.brand],
     topsFamily: topsFamily.has(r.brand),
-    tags: tagsByBrand[r.brand] ?? [category.toLowerCase()],
+    tags: [...(tagsByBrand[r.brand] ?? [category.toLowerCase()]), ...(giftBrands.has(r.brand) ? ['gift'] : [])],
     valueThb: valueThbByName[r.name],
     redemptions: popularity(r),
     dateAdded: dateAdded(r),

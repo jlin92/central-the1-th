@@ -91,10 +91,9 @@ function Reason({ text, className }: { text?: string; className?: string }) {
 
 /** Offer card in The 1 visual language. */
 export function OfferCard({ offer: o, index = 0, reason, badge, variant = 'coupon', className }: OfferCardProps) {
-  const { openDetail, location } = useDemo();
+  const { openDetail } = useDemo();
   const action = useOfferAction(o);
   const shownBadge = badge ?? autoBadge(o);
-  const hereBadge = location && o.brandId === location.brandId && o.channel.includes('In-store') ? 'Use here' : undefined;
   const motionProps = {
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0 },
@@ -191,7 +190,7 @@ export function OfferCard({ offer: o, index = 0, reason, badge, variant = 'coupo
         <span className="absolute -bottom-2 left-2 rounded bg-[#6b6b73] px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
           {typeTag[o.offerType] ?? 'Coupon'}
         </span>
-        {(hereBadge || shownBadge) && <Badge tone={hereBadge ? 'green' : 'red'}>{hereBadge ?? shownBadge}</Badge>}
+        {shownBadge && <Badge>{shownBadge}</Badge>}
       </div>
       <div className="px-2.5 pb-2 pt-3.5">
         <p className="font-heading text-[18px] font-bold leading-tight text-on-surface">{o.title}</p>

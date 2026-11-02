@@ -28,7 +28,7 @@ const formatOrder = ['Tops', 'Tops daily', 'Tops Online', 'Central Food Hall', '
 
 /** Chapter 3 — Brand hub (e.g. Tops) with dynamically sorted offers. */
 export function BrandHubScreen() {
-  const { brandId, rankContext, sortMode, setRanking, openWhy, location, goToChapter, trackAffinity } = useDemo();
+  const { brandId, rankContext, sortMode, setRanking, openWhy, goToChapter, trackAffinity } = useDemo();
   const style = brandStyle(brandId);
   const isTops = brandId === 'tops';
   const [format, setFormat] = useState<string>('all');
@@ -53,7 +53,6 @@ export function BrandHubScreen() {
     return () => setRanking(null);
   }, [coupons, setRanking, style.label]);
 
-  const here = location && location.brandId === brandId;
   const reasonFor = (s: ScoredOffer) => primaryReason(s);
   const onlineHidden = coupons.excluded.filter((s) => s.excluded?.startsWith('Online')).length;
 
@@ -75,12 +74,6 @@ export function BrandHubScreen() {
             Follow
           </button>
         </div>
-        {here && (
-          <div className="mt-3 flex items-center gap-2 rounded-xl bg-the1-green-soft px-3 py-2 text-[12px] font-semibold text-success">
-            <Icon name="location_on" filled className="text-[16px]" />
-            You’re at {location!.store} {location!.branch} — in-store coupons first
-          </div>
-        )}
       </div>
 
       <div className="flex flex-col gap-3 px-3 pt-3">
@@ -94,17 +87,7 @@ export function BrandHubScreen() {
           </div>
         )}
 
-        <SortIndicator
-          live={sortMode === 'dy' && !!here}
-          label={
-            sortMode === 'dy'
-              ? here
-                ? `Sorted for you · usable at ${location!.store} first`
-                : 'Sorted for you by Dynamic Yield'
-              : 'The 1 today · newest first, no filtering'
-          }
-          onWhy={openWhy}
-        />
+        <SortIndicator live={false} label={sortMode === 'dy' ? 'Sorted for you by Dynamic Yield' : 'The 1 today · newest first, no filtering'} onWhy={openWhy} />
 
         {sortMode === 'dy' && coupons.excluded.length > 0 && (
           <button type="button" onClick={openWhy} className="flex items-center gap-1.5 self-start text-[12px] text-on-surface-variant">

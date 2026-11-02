@@ -1,4 +1,14 @@
-import type { AppUserId, MusePrompt, MuseReply, ProactiveNudge } from '@/types';
+import type { AppUserId, MusePrompt, MuseReply, Offer, ProactiveNudge } from '@/types';
+import { catalogue, pointsPerBaht } from '@/mock-data/offers';
+import { daysUntil, formatPoints, formatThb, shortDate } from '@/hooks/utils';
+
+/** Live member state the dynamic resolvers need. */
+export interface MuseContext {
+  points: number;
+  walletIds: Set<string>;
+  redeemedIds: Set<string>;
+  joinedIds: Set<string>;
+}
 
 /* ================================================================== */
 /* PERSONA 1 — Ploy · NEW MEMBER (education + free value + earn)       */
@@ -122,7 +132,7 @@ const ployRules: { match: RegExp; key: string }[] = [
   { match: /(how.*(work|start)|what is the 1|new|explain)/i, key: 'how-it-works' },
   { match: /(earn|fast|challenge|bonus|more points)/i, key: 'earn' },
   { match: /(worth|value|what can points|8 points|baht|cash)/i, key: 'points-value' },
-  { match: /(free|coupon|get)/i, key: 'free-coupons' },
+  { match: /(free coupons|show me free|coupon|\bget\b)/i, key: 'free-coupons' },
 ];
 
 /* ================================================================== */
@@ -187,15 +197,6 @@ const natScripts: Record<string, MuseReply> = {
     reasons: ['5.4 pts per ฿1', 'Popcorn combo', '฿60 off a second ticket', 'Dinner first'],
     followups: ['Something for the kids this weekend', 'Use my expiring points'],
   },
-  here: {
-    kind: 'commerce',
-    text: 'You’re at Tops Central Rama 9. These are usable at this till right now — show your QR and they apply automatically:',
-    chips: ['Store location', 'In-store only'],
-    results: ['300006', '300005', '300008', '200077'],
-    reasons: ['฿60 off ฿800', '฿30 off ฿500', 'x2 points on Tops Own Brand', 'Phrom Pay ฿40 off'],
-    action: { label: 'Open Tops hub', chapter: 3, brandId: 'tops' },
-    followups: ['How far is my Tops challenge?', 'Use my expiring points'],
-  },
   level: {
     kind: 'support',
     text: 'You’re Level 3 with ฿138,400 spend this year. The 1 Exclusive needs ฿300,000 — but your current benefits are already working for you:',
@@ -212,7 +213,7 @@ const natScripts: Record<string, MuseReply> = {
   },
   'deal-check': {
     kind: 'support',
-    text: 'For you, yes — it fits your usual spend, you haven’t redeemed it before, and it stacks with the points you earn on the receipt. If you’re at Tops this week, use the ฿60 off first; it’s the better ratio for your basket size.',
+    text: 'For you, yes — it fits your usual spend, you haven’t redeemed it before, and it stacks with the points you earn on the receipt. For your Tops shop this week, use the ฿60 off first; it’s the better ratio for your basket size.',
     chips: ['User margin', 'Eligibility ✓'],
     followups: ['What can I use at Tops this week?', 'Use my expiring points'],
   },
@@ -220,7 +221,6 @@ const natScripts: Record<string, MuseReply> = {
 
 const natRules: { match: RegExp; key: string }[] = [
   { match: /(good deal|worth it|should i)/i, key: 'deal-check' },
-  { match: /\b(here|at tops|in store|in-store|checkout|right now|till)\b/i, key: 'here' },
   { match: /(challenge|progress|how far|mission)/i, key: 'tops-challenge' },
   { match: /(tops|grocer|weekly|shop this week|supermarket)/i, key: 'tops' },
   { match: /(movie|cinema|film|หนัง|date night)/i, key: 'movie' },
@@ -229,8 +229,217 @@ const natRules: { match: RegExp; key: string }[] = [
   { match: /(coffee|cafe|café|กาแฟ|starbucks)/i, key: 'coffee' },
   { match: /(level|exclusive|benefit|lounge|parking)/i, key: 'level' },
   { match: /(card|redz|credit)/i, key: 'card' },
-  { match: /(expir|use my points|points|redeem|cash|value|lose)/i, key: 'expiring' },
+  { match: /(expiring points|my points|use my|redeem|cash|value|lose)/i, key: 'expiring' },
 ];
+
+/* ================================================================== */
+/* SHARED — prompts every member can ask (from The 1's prompt list)    */
+/* Static where the answer is editorial; dynamic where the feed decides */
+/* ================================================================== */
+
+const commonScripts: Record<string, MuseReply> = {
+  'perks-free': {
+    kind: 'commerce',
+    text: 'Yes — these movie and food perks are redeemed with points, no cash. Best value per point first:',
+    chips: ['Free Entertainment & Food Perks', 'Points only'],
+    results: ['200119', '200118', '200123', '200121'],
+    reasons: ['Free 2D ticket · 5.4 pts per ฿1', 'Free tall drink · 5.5 pts per ฿1', 'Free 2-piece chicken · 560 pts', 'Popcorn combo · 650 pts'],
+    followups: ['I have 1,500 points, what can I redeem?', 'How can I earn bonus points this month?'],
+  },
+  'pet': {
+    kind: 'commerce',
+    text: 'For your dog: Pet ’N Me coupons are free to collect, and the Pet ’N Me challenge turns the next big bag of food into bonus points.',
+    chips: ['Category: Pet', 'Free to collect'],
+    results: ['200014', '200015', '200016', '200101'],
+    reasons: ['฿50 off ฿500 · 10%', '฿100 off ฿1,000', 'Bulk buy · ฿150 off ฿1,500', 'Shop ฿2,000 → 200 points'],
+    followups: ['Which coupons expire soon?', 'How can I earn bonus points this month?'],
+  },
+  'insurance': {
+    kind: 'commerce',
+    text: 'Travelling next month? The 1 Insure has travel cover deals, and a hotel perk if you’d like to use points on the trip itself:',
+    chips: ['Brand: The 1 Insure', 'Travel'],
+    results: ['200171', '200174', '200172', '200141'],
+    reasons: ['฿300 off at ELEMENTS', 'Annual plan · ฿500 off', 'Earn x3 points on the premium', 'Centara Hua Hin · 1 night with points'],
+    followups: ['Any free movie or food perks?', 'Show me gift ideas'],
+  },
+  'fashion-app': {
+    kind: 'commerce',
+    text: 'The best fashion deals on Central App right now — on-top discounts and point multipliers you only get in the app:',
+    chips: ['Central App Extra Discounts', 'Category: Fashion'],
+    results: ['200149', '200147', '200145', '200150'],
+    reasons: ['On-top ฿500 off ฿2,500', 'On-top ฿300 off ฿1,500', 'On-top ฿250 off ฿1,250', 'x10 points'],
+    followups: ['Show me gift ideas', 'Which coupons expire soon?'],
+  },
+  gift: {
+    kind: 'support',
+    text: 'Happy to help you find a gift. Tell me who it’s for and I’ll pick the best-value deals — free coupons first, then perks you can redeem with points.',
+    chips: ['Intent: gifting', 'Guided discovery'],
+    followups: ['For my partner', 'For a friend', 'For my mum', 'For the kids', 'A gift under 1,000 points'],
+  },
+  'gift-partner': {
+    kind: 'commerce',
+    text: 'For your partner — jewellery and a treat, with the Pandora coupon free to collect:',
+    chips: ['Gift · partner', 'Best value first'],
+    results: ['300023', '200151', '200139', '200133'],
+    reasons: ['Free coupon · ฿300 off ฿2,500', 'Central App · on-top ฿500', '30-min massage · 1,000 pts', 'Shibuya toast date · 1,700 pts'],
+    followups: ['For a friend', 'A gift under 1,000 points', 'Which coupons expire soon?'],
+  },
+  'gift-friend': {
+    kind: 'commerce',
+    text: 'For a friend — small, thoughtful and good value:',
+    chips: ['Gift · friend', 'Best value first'],
+    results: ['200118', '300022', '200124', '300014'],
+    reasons: ['Free tall drink · 800 pts', 'Free coupon · Charles & Keith ฿200 off', '6 donuts · 1,000 pts', 'Free coupon · Brown Cafe'],
+    followups: ['For my partner', 'For my mum', 'A gift under 1,000 points'],
+  },
+  'gift-mum': {
+    kind: 'commerce',
+    text: 'For your mum — beauty and a little pampering:',
+    chips: ['Gift · mum', 'Best value first'],
+    results: ['300018', '200153', '200139', '200138'],
+    reasons: ['Free coupon · Beauty Galerie ฿300 off', 'Central App · Estée Lauder ฿300', 'Cenvaree massage · 1,000 pts', 'Seafood buffet for two · 10,990 pts'],
+    followups: ['For my partner', 'For the kids', 'Show me beauty deals'],
+  },
+  'gift-kids': {
+    kind: 'commerce',
+    text: 'For the kids — a day out or something to unwrap:',
+    chips: ['Gift · kids', 'Best value first'],
+    results: ['300024', '200034', '200143', '200144'],
+    reasons: ['Free coupon · Central Kids ฿200 off', 'Free coupon · B2S ฿30 off', 'SEA LIFE 30% off · 1,600 pts', 'KidZania ฿400 off · 3,200 pts'],
+    followups: ['For my partner', 'A gift under 1,000 points'],
+  },
+  'gift-budget': {
+    kind: 'commerce',
+    text: 'Gifts under 1,000 points — each one beats the 8:1 cash rate:',
+    chips: ['Gift · under 1,000 pts', 'User margin'],
+    results: ['200118', '200132', '200134', '200136'],
+    reasons: ['800 pts · 5.5 per ฿1', '900 pts · 6.4 per ฿1', '800 pts · 6.7 per ฿1', '650 pts · coffee + bakery'],
+    followups: ['For my partner', 'For a friend', 'How can I earn bonus points this month?'],
+  },
+};
+
+const commonRules: { match: RegExp; key: string }[] = [
+  { match: /(for my partner|for my (wife|husband|boyfriend|girlfriend))/i, key: 'gift-partner' },
+  { match: /for (a|my) friend/i, key: 'gift-friend' },
+  { match: /for my (mum|mom|mother)/i, key: 'gift-mum' },
+  { match: /for (the|my) kids?/i, key: 'gift-kids' },
+  { match: /(gift|present).*(under|below|budget|points)/i, key: 'gift-budget' },
+  { match: /(gift|present|birthday|anniversary|ของขวัญ)/i, key: 'gift' },
+  { match: /(free )?(movie|film|cinema)( or | and |\/)(food|snack)|perks?\b/i, key: 'perks-free' },
+  { match: /(dog|cat|puppy|pet)/i, key: 'pet' },
+  { match: /(insurance|travel(l)?ing|trip|flight|cover)/i, key: 'insurance' },
+  { match: /fashion.*(central app|app)|central app.*fashion/i, key: 'fashion-app' },
+];
+
+/** Catalogue brands, longest name first so "Tops Online" wins over "Tops". */
+const brandNames = [...new Set(catalogue.map((o) => o.brand))].sort((a, b) => b.length - a.length);
+const brandIn = (text: string) => brandNames.find((b) => text.toLowerCase().includes(b.toLowerCase()));
+
+const usable = (o: Offer, ctx: MuseContext) => o.inStock && daysUntil(o.validUntil) >= 0 && !ctx.walletIds.has(o.id) && !ctx.redeemedIds.has(o.id);
+const value = (o: Offer) => (o.discountThb && o.minSpendThb ? o.discountThb / o.minSpendThb : 0);
+const ids = (list: Offer[]) => list.map((o) => o.id);
+
+/**
+ * Prompts whose answer depends on live state are built from the feed at the
+ * moment they are asked: brand coupons, "I have N points", expiring soon, earn.
+ */
+function resolveDynamic(userId: AppUserId, text: string, ctx: MuseContext): { reply: MuseReply; intent: string } | null {
+  const t = text.toLowerCase();
+
+  // "I have 1,500 points, what can I redeem?"
+  const pts = t.match(/(\d[\d,]*)\s*(points?|pts)/);
+  if (pts && /(redeem|what can|get|buy|use)/.test(t)) {
+    const budget = Number(pts[1].replace(/,/g, ''));
+    const list = catalogue
+      .filter((o) => (o.offerType === 'Redeem Points' || o.offerType === 'Redeem Cash') && o.pointsCost > 0 && o.pointsCost <= budget && usable(o, ctx))
+      .sort((a, b) => (pointsPerBaht(a) ?? 99) - (pointsPerBaht(b) ?? 99) || b.redemptions - a.redemptions)
+      .slice(0, 4);
+    if (!list.length) return { reply: { kind: 'support', text: `Nothing is redeemable yet at ${formatPoints(budget)} points — the cheapest perk is 450 points. A challenge is the quickest way there.`, action: { label: 'See challenges', chapter: 6 }, followups: ['How can I earn bonus points this month?'] }, intent: 'budget' };
+    return {
+      intent: 'budget',
+      reply: {
+        kind: 'commerce',
+        text: `With ${formatPoints(budget)} points you can redeem these — best value per point first (8 points = ฿1 is the cash benchmark):`,
+        chips: [`Budget: ${formatPoints(budget)} pts`, 'User margin', 'Redeem Points / Redeem Cash'],
+        results: ids(list),
+        reasons: list.map((o) => `${formatPoints(o.pointsCost)} pts · ${pointsPerBaht(o)} per ฿1${(pointsPerBaht(o) ?? 9) < 8 ? ' · beats cash' : ''}`),
+        followups: ['Any free movie or food perks?', 'How can I earn bonus points this month?', 'Which coupons expire soon?'],
+      },
+    };
+  }
+
+  // "Which coupons expire soon?"
+  if (/expir|ending soon|end(s)? soon|last chance/.test(t) && /(coupon|deal|offer|soon|which)/.test(t)) {
+    const list = catalogue
+      .filter((o) => ['Coupon', 'Phrom Pay Coupon'].includes(o.offerType) && daysUntil(o.validUntil) <= 14 && usable(o, ctx))
+      .sort((a, b) => daysUntil(a.validUntil) - daysUntil(b.validUntil) || b.redemptions - a.redemptions)
+      .slice(0, 4);
+    return {
+      intent: 'expiring-coupons',
+      reply: {
+        kind: 'commerce',
+        text: `${list.length} coupons you can still collect end within two weeks — soonest first. Collect now, use before the date:`,
+        chips: ['valid_until ≤ 14 days', 'Ending soon'],
+        results: ids(list),
+        reasons: list.map((o) => {
+          const d = daysUntil(o.validUntil);
+          return d === 0 ? 'Ends today' : d === 1 ? 'Ends tomorrow' : `Ends ${shortDate(o.validUntil)} · ${d} days`;
+        }),
+        followups: ['What free coupons can I get at Tops this week?', 'Any free movie or food perks?'],
+      },
+    };
+  }
+
+  // "How can I earn bonus points this month?"
+  if (/(earn|bonus|more points|x\d|multiplier)/.test(t) && !/(expir|redeem)/.test(t)) {
+    const list = catalogue
+      .filter((o) => o.offerType === 'Challenge' && !ctx.joinedIds.has(o.id) && daysUntil(o.validUntil) >= 0)
+      .sort((a, b) => (b.multiplier ? 10000 : b.rewardPoints ?? 0) - (a.multiplier ? 10000 : a.rewardPoints ?? 0))
+      .slice(0, 4);
+    return {
+      intent: 'earn-bonus',
+      reply: {
+        kind: 'commerce',
+        text: `${userId === 1 ? 'Fastest way to your first points: ' : 'This month’s biggest earners: '}join a challenge — it’s free — and bonus points land on top of what you earn anyway.`,
+        chips: ['offer_type = Challenge', 'reward_points · points_multiplier'],
+        results: ids(list),
+        reasons: list.map((o) => (o.multiplier ? `x${o.multiplier} points on every basket` : `+${formatPoints(o.rewardPoints ?? 0)} bonus · ${o.subtitle}`)),
+        action: { label: 'See all challenges', chapter: 6 },
+        followups: ['I have 1,500 points, what can I redeem?', 'Which coupons expire soon?'],
+      },
+    };
+  }
+
+  // "What free coupons can I get at Tops this week?" / "I'm buying a laptop at Power Buy, any discounts?"
+  const brand = brandIn(t);
+  if (brand && brand !== 'Central App' && /(coupon|discount|deal|offer|buying|save|free)/.test(t)) {
+    const family = brand === 'Tops' ? (o: Offer) => o.topsFamily && o.channel.includes('In-store') : (o: Offer) => o.brand === brand;
+    const freeOnly = /free/.test(t) && !/discount|buying/.test(t);
+    const coupons = catalogue
+      .filter((o) => family(o) && ['Coupon', 'Phrom Pay Coupon'].includes(o.offerType) && usable(o, ctx) && (!freeOnly || o.pointsCost === 0))
+      .sort((a, b) => (freeOnly ? value(b) - value(a) : (b.discountThb ?? 0) - (a.discountThb ?? 0)));
+    const challenge = catalogue.find((o) => o.offerType === 'Challenge' && o.brand === brand && !ctx.joinedIds.has(o.id));
+    const list = [...coupons.slice(0, challenge ? 3 : 4), ...(challenge ? [challenge] : [])];
+    if (!list.length) return null;
+    const skipped = catalogue.filter((o) => o.brand === brand && (ctx.walletIds.has(o.id) || ctx.redeemedIds.has(o.id))).length;
+    const big = t.match(/(laptop|tv|phone|fridge|sofa|bag|shoes|stroller)/);
+    return {
+      intent: `brand:${brand}`,
+      reply: {
+        kind: 'commerce',
+        text: big
+          ? `Buying a ${big[1]} at ${brand}? The biggest discount first — stack it with the ${brand} challenge to earn bonus points on the same receipt.`
+          : `Free ${brand} coupons you can collect this week${skipped ? ` (I’ve skipped ${skipped} you already have)` : ''} — best value for a typical basket first:`,
+        chips: [`Brand: ${brand}`, freeOnly ? 'price = 0' : 'discount_thb · min_spend_thb', 'Valid this week'],
+        results: ids(list),
+        reasons: list.map((o) => (o.offerType === 'Challenge' ? `+${formatPoints(o.rewardPoints ?? 0)} bonus · ${o.subtitle}` : o.discountThb && o.minSpendThb ? `${formatThb(o.discountThb)} off ${formatThb(o.minSpendThb)} · ${Math.round(value(o) * 100)}%` : o.subtitle ?? '')),
+        followups: ['Which coupons expire soon?', 'How can I earn bonus points this month?'],
+      },
+    };
+  }
+
+  return null;
+}
 
 /* ================================================================== */
 /* Exports                                                             */
@@ -258,6 +467,20 @@ export const musePromptsByUser: Record<AppUserId, MusePrompt[]> = {
   ],
 };
 
+/** Prompts every member can ask — rendered as a scrolling row and all typeable. */
+export const commonPrompts: { label: string; icon: string }[] = [
+  { label: 'What free coupons can I get at Tops this week?', icon: 'shopping_basket' },
+  { label: 'I have 1,500 points, what can I redeem?', icon: 'currency_exchange' },
+  { label: 'Any free movie or food perks?', icon: 'theaters' },
+  { label: "I'm buying a laptop at Power Buy, any discounts?", icon: 'laptop_mac' },
+  { label: 'How can I earn bonus points this month?', icon: 'flag' },
+  { label: 'Show me deals for my dog', icon: 'pets' },
+  { label: "I'm traveling next month, any insurance deals?", icon: 'flight' },
+  { label: 'Which coupons expire soon?', icon: 'hourglass_top' },
+  { label: 'Best fashion deals on Central App', icon: 'checkroom' },
+  { label: 'Help me find a gift', icon: 'redeem' },
+];
+
 export const proactiveNudgeByUser: Record<AppUserId, ProactiveNudge> = {
   1: {
     text: 'Hi Ploy, welcome to The 1! Coupons here are free to collect and every one earns points. Want a 20-second tour?',
@@ -275,22 +498,29 @@ const fallbackByUser: Record<AppUserId, MuseReply> = {
   1: {
     kind: 'support',
     text: 'I can explain how The 1 works, find free coupons for what you’re into, or show you the fastest way to earn points. Try one of these:',
-    followups: ['How does The 1 work?', 'Show me free coupons', 'Find me a coffee deal'],
+    followups: ['How does The 1 work?', 'Show me free coupons', 'Help me find a gift'],
   },
   2: {
     kind: 'support',
-    text: 'I can find the best value for your points, show what’s usable at Tops this week, or plan something for the kids. Try one of these:',
-    followups: ['Use my expiring points', 'What can I use at Tops this week?', 'Something for the kids this weekend'],
+    text: 'I can find the best value for your points, show what’s usable at Tops this week, or help with a gift. Try one of these:',
+    followups: ['Use my expiring points', 'What can I use at Tops this week?', 'Help me find a gift'],
   },
 };
 
 /** Resolve an assistant reply for a starter-prompt intent, per persona. */
 export function replyForIntent(userId: AppUserId, intent: string): MuseReply {
-  return scriptsByUser[userId]?.[intent] ?? fallbackByUser[userId];
+  return scriptsByUser[userId]?.[intent] ?? commonScripts[intent] ?? fallbackByUser[userId];
 }
 
-/** Resolve an assistant reply for free-typed text, per persona. Returns the matched intent too. */
-export function replyForText(userId: AppUserId, text: string): { reply: MuseReply; intent?: string } {
+/**
+ * Resolve an assistant reply for free-typed text. Order: feed-driven dynamic
+ * answers → shared prompts → persona-specific scripts → fallback.
+ */
+export function replyForText(userId: AppUserId, text: string, ctx: MuseContext): { reply: MuseReply; intent?: string } {
+  const dyn = resolveDynamic(userId, text, ctx);
+  if (dyn) return dyn;
+  const common = commonRules.find((r) => r.match.test(text));
+  if (common) return { reply: commonScripts[common.key], intent: common.key };
   const rule = rulesByUser[userId]?.find((r) => r.match.test(text));
   if (rule) return { reply: scriptsByUser[userId][rule.key], intent: rule.key };
   return { reply: fallbackByUser[userId] };
@@ -303,9 +533,17 @@ export const intentAffinity: Record<string, string> = {
   dessert: 'Food & Beverage',
   beauty: 'Beauty',
   fashion: 'Fashion',
+  'fashion-app': 'Fashion',
   movie: 'Entertainment',
+  'perks-free': 'Entertainment',
   luxury: 'Fashion',
   kids: 'Kids',
+  'gift-kids': 'Kids',
+  'gift-mum': 'Beauty',
+  'gift-partner': 'Fashion',
   tops: 'Grocery',
-  here: 'Grocery',
+  'brand:Tops': 'Grocery',
+  'brand:Power Buy': 'Electronics',
+  pet: 'Pet',
+  insurance: 'Travel',
 };

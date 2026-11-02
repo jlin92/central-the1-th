@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
-import type { AppUserId, AppUserProfile, Offer, ScoredOffer, StoreLocation } from '@/types';
+import type { AppUserId, AppUserProfile, Offer, ScoredOffer } from '@/types';
 import { appUserProfileById } from '@/mock-data/appUsers';
 import { chapterIdByKey, totalChapters } from './chapters';
 import type { RankContext, SortMode } from '@/services/sortEngine';
@@ -43,10 +43,6 @@ interface DemoContextValue {
   /** In-session affinity built from taps (category, brand:<id>, tag:<x>). */
   sessionAffinity: Record<string, number>;
   trackAffinity: (key: string, weight?: number) => void;
-
-  /** Store-location simulation (presenter toggle). */
-  location: StoreLocation | null;
-  toggleLocation: () => void;
 
   /** Sorting mode for lists: DY vs the live app's "newest first". */
   sortMode: SortMode;
@@ -113,7 +109,6 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const [spent, setSpent] = useState(0);
   const [earned, setEarned] = useState(0);
   const [sessionAffinity, setSessionAffinity] = useState<Record<string, number>>({});
-  const [locationOn, setLocationOn] = useState(false);
   const [sortMode, setSortMode] = useState<SortMode>('dy');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeChip, setActiveChipState] = useState<string | null>(null);
@@ -126,7 +121,6 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const points = appUserProfile.points - spent + earned;
   const wallet = useMemo(() => [...appUserProfile.walletIds, ...walletExtra], [appUserProfile, walletExtra]);
   const joined = useMemo(() => ({ ...appUserProfile.joined, ...joinedExtra }), [appUserProfile, joinedExtra]);
-  const location = locationOn && appUserProfile.location ? appUserProfile.location : null;
 
   const goToChapter = useCallback((id: number) => setChapter(Math.min(Math.max(1, id), totalChapters)), []);
   const nextChapter = useCallback(() => setChapter((c) => Math.min(c + 1, totalChapters)), []);
@@ -152,7 +146,6 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     setSpent(0);
     setEarned(0);
     setSessionAffinity({});
-    setLocationOn(false);
     setSortMode('dy');
     setSearchQuery('');
     setActiveChipState(null);
@@ -229,8 +222,6 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     [showToast, trackAffinity],
   );
 
-  const toggleLocation = useCallback(() => setLocationOn((v) => !v), []);
-
   const setActiveChip = useCallback((c: string | null) => setActiveChipState(c), []);
 
   const askMuse = useCallback((q: string) => {
@@ -248,13 +239,12 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       profile: appUserProfile,
       points,
       sessionAffinity,
-      location,
       redeemedIds: new Set([...appUserProfile.redeemedIds, ...usedIds]),
       walletIds: new Set(wallet),
       joinedIds: new Set(Object.keys(joined)),
       mode: sortMode,
     }),
-    [appUserProfile, points, sessionAffinity, location, usedIds, wallet, joined, sortMode],
+    [appUserProfile, points, sessionAffinity, usedIds, wallet, joined, sortMode],
   );
 
   const value: DemoContextValue = {
@@ -275,8 +265,6 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     joinChallenge,
     sessionAffinity,
     trackAffinity,
-    location,
-    toggleLocation,
     sortMode,
     setSortMode,
     rankContext,

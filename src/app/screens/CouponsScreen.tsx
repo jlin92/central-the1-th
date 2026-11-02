@@ -16,15 +16,13 @@ import { cn, shortDate } from '@/hooks/utils';
 
 /** Chapter 5 — My Coupons: the wallet of collected coupons, with "use now" QR. */
 export function CouponsScreen() {
-  const { wallet, usedIds, useCoupon, goToChapter, location, rankContext, openDetail } = useDemo();
+  const { wallet, usedIds, useCoupon, goToChapter, rankContext, openDetail } = useDemo();
   const [tab, setTab] = useState<'ready' | 'used'>('ready');
   const [using, setUsing] = useState<Offer | null>(null);
   const all = offers(wallet);
   const ready = all.filter((o) => !usedIds.includes(o.id));
   const used = all.filter((o) => usedIds.includes(o.id));
-  // In-store coupons for the current location float to the top of the wallet.
-  const sorted = location ? [...ready.filter((o) => o.brandId === location.brandId), ...ready.filter((o) => o.brandId !== location.brandId)] : ready;
-  const list = tab === 'ready' ? sorted : used;
+  const list = tab === 'ready' ? ready : used;
   const suggestions = onlyForYou(rankContext, 4).map((s) => s.offer);
 
   return (
@@ -53,7 +51,6 @@ export function CouponsScreen() {
 
         <div className="flex flex-col gap-2.5">
           {list.map((o, i) => {
-            const here = location && o.brandId === location.brandId && o.channel.includes('In-store');
             return (
               <motion.div key={o.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 * i }} className="overflow-hidden rounded-2xl bg-white shadow-card">
                 <button type="button" onClick={() => openDetail(o)} className="flex w-full items-center gap-3 p-3 text-left">
@@ -62,12 +59,6 @@ export function CouponsScreen() {
                     <p className="truncate text-[11px] uppercase tracking-wide text-on-surface-variant">{o.brand}</p>
                     <p className="font-heading text-[17px] font-bold leading-tight text-on-surface">{o.title}</p>
                     <p className="truncate text-[11px] text-on-surface-variant">{o.subtitle ?? o.channel} · until {shortDate(o.validUntil)}</p>
-                    {here && (
-                      <span className="mt-1 inline-flex items-center gap-1 rounded bg-the1-green-soft px-1.5 py-0.5 text-[10px] font-bold text-success">
-                        <Icon name="location_on" filled className="text-[12px]" />
-                        Use here
-                      </span>
-                    )}
                   </div>
                 </button>
                 <div className="ticket-notch ticket-dash flex items-center justify-between px-3 py-2">

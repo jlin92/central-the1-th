@@ -24,7 +24,8 @@
       "fashion",
       "department store",
       "clothes",
-      "beauty"
+      "beauty",
+      "gift"
     ],
     "redemptions": 21900,
     "dateAdded": "2026-09-05"
@@ -54,7 +55,8 @@
       "fashion",
       "department store",
       "clothes",
-      "beauty"
+      "beauty",
+      "gift"
     ],
     "redemptions": 16834,
     "dateAdded": "2026-10-04"
@@ -84,7 +86,8 @@
       "fashion",
       "department store",
       "clothes",
-      "beauty"
+      "beauty",
+      "gift"
     ],
     "redemptions": 12406,
     "dateAdded": "2026-11-02"
@@ -114,7 +117,8 @@
       "fashion",
       "department store",
       "clothes",
-      "beauty"
+      "beauty",
+      "gift"
     ],
     "redemptions": 7692,
     "dateAdded": "2026-10-02"
@@ -144,7 +148,8 @@
       "fashion",
       "department store",
       "clothes",
-      "beauty"
+      "beauty",
+      "gift"
     ],
     "redemptions": 5450,
     "dateAdded": "2026-10-31"
@@ -174,7 +179,8 @@
       "fashion",
       "department store",
       "clothes",
-      "family"
+      "family",
+      "gift"
     ],
     "redemptions": 18200,
     "dateAdded": "2026-09-30"
@@ -204,7 +210,8 @@
       "fashion",
       "department store",
       "clothes",
-      "family"
+      "family",
+      "gift"
     ],
     "redemptions": 16854,
     "dateAdded": "2026-10-29"
@@ -234,7 +241,8 @@
       "fashion",
       "department store",
       "clothes",
-      "family"
+      "family",
+      "gift"
     ],
     "redemptions": 12426,
     "dateAdded": "2026-09-28"
@@ -264,7 +272,8 @@
       "fashion",
       "department store",
       "clothes",
-      "family"
+      "family",
+      "gift"
     ],
     "redemptions": 8680,
     "dateAdded": "2026-10-27"
@@ -294,7 +303,8 @@
       "fashion",
       "department store",
       "clothes",
-      "family"
+      "family",
+      "gift"
     ],
     "redemptions": 7101,
     "dateAdded": "2026-10-05"
@@ -681,7 +691,8 @@
       "home",
       "stationery",
       "minimal",
-      "lifestyle"
+      "lifestyle",
+      "gift"
     ],
     "redemptions": 12654,
     "dateAdded": "2026-10-31"
@@ -711,7 +722,8 @@
       "home",
       "stationery",
       "minimal",
-      "lifestyle"
+      "lifestyle",
+      "gift"
     ],
     "redemptions": 8908,
     "dateAdded": "2026-09-30"
@@ -741,7 +753,8 @@
       "home",
       "stationery",
       "minimal",
-      "lifestyle"
+      "lifestyle",
+      "gift"
     ],
     "redemptions": 7245,
     "dateAdded": "2026-10-29"
@@ -896,7 +909,8 @@
       "tv",
       "phone",
       "appliance",
-      "gadget"
+      "gadget",
+      "gift"
     ],
     "redemptions": 12766,
     "dateAdded": "2026-10-03"
@@ -927,7 +941,8 @@
       "tv",
       "phone",
       "appliance",
-      "gadget"
+      "gadget",
+      "gift"
     ],
     "redemptions": 8052,
     "dateAdded": "2026-11-01"
@@ -958,7 +973,8 @@
       "tv",
       "phone",
       "appliance",
-      "gadget"
+      "gadget",
+      "gift"
     ],
     "redemptions": 5810,
     "dateAdded": "2026-10-01"
@@ -989,7 +1005,8 @@
       "tv",
       "phone",
       "appliance",
-      "gadget"
+      "gadget",
+      "gift"
     ],
     "redemptions": 4500,
     "dateAdded": "2026-10-30"
@@ -1019,7 +1036,8 @@
       "books",
       "stationery",
       "kids",
-      "school"
+      "school",
+      "gift"
     ],
     "redemptions": 20365,
     "dateAdded": "2026-09-29"
@@ -1049,7 +1067,8 @@
       "books",
       "stationery",
       "kids",
-      "school"
+      "school",
+      "gift"
     ],
     "redemptions": 17218,
     "dateAdded": "2026-10-28"
@@ -1079,7 +1098,8 @@
       "books",
       "stationery",
       "kids",
-      "school"
+      "school",
+      "gift"
     ],
     "redemptions": 12790,
     "dateAdded": "2026-09-27"
@@ -1538,7 +1558,8 @@
       "fashion",
       "department store",
       "clothes",
-      "beauty"
+      "beauty",
+      "gift"
     ],
     "redemptions": 5382,
     "dateAdded": "2026-10-30"
@@ -1567,7 +1588,8 @@
       "fashion",
       "department store",
       "clothes",
-      "beauty"
+      "beauty",
+      "gift"
     ],
     "redemptions": 2727,
     "dateAdded": "2026-09-29"
@@ -1596,7 +1618,8 @@
       "fashion",
       "department store",
       "clothes",
-      "beauty"
+      "beauty",
+      "gift"
     ],
     "redemptions": 1924,
     "dateAdded": "2026-10-28"
@@ -1625,7 +1648,8 @@
       "fashion",
       "department store",
       "clothes",
-      "family"
+      "family",
+      "gift"
     ],
     "redemptions": 5385,
     "dateAdded": "2026-09-27"
@@ -1654,7 +1678,8 @@
       "fashion",
       "department store",
       "clothes",
-      "family"
+      "family",
+      "gift"
     ],
     "redemptions": 2730,
     "dateAdded": "2026-10-26"
@@ -1683,7 +1708,8 @@
       "fashion",
       "department store",
       "clothes",
-      "family"
+      "family",
+      "gift"
     ],
     "redemptions": 1927,
     "dateAdded": "2026-09-25"
@@ -1806,7 +1832,8 @@
       "tv",
       "phone",
       "appliance",
-      "gadget"
+      "gadget",
+      "gift"
     ],
     "redemptions": 5412,
     "dateAdded": "2026-09-30"
@@ -1836,7 +1863,8 @@
       "tv",
       "phone",
       "appliance",
-      "gadget"
+      "gadget",
+      "gift"
     ],
     "redemptions": 2757,
     "dateAdded": "2026-10-29"
@@ -1866,7 +1894,8 @@
       "tv",
       "phone",
       "appliance",
-      "gadget"
+      "gadget",
+      "gift"
     ],
     "redemptions": 1954,
     "dateAdded": "2026-09-28"
@@ -1985,7 +2014,8 @@
       "books",
       "stationery",
       "kids",
-      "school"
+      "school",
+      "gift"
     ],
     "redemptions": 5418,
     "dateAdded": "2026-09-24"
@@ -2014,7 +2044,8 @@
       "books",
       "stationery",
       "kids",
-      "school"
+      "school",
+      "gift"
     ],
     "redemptions": 2763,
     "dateAdded": "2026-10-23"
@@ -2043,7 +2074,8 @@
       "books",
       "stationery",
       "kids",
-      "school"
+      "school",
+      "gift"
     ],
     "redemptions": 1960,
     "dateAdded": "2026-09-22"
@@ -2158,7 +2190,8 @@
     "tags": [
       "fashion",
       "online",
-      "delivery"
+      "delivery",
+      "gift"
     ],
     "redemptions": 5445,
     "dateAdded": "2026-09-27"
@@ -2186,7 +2219,8 @@
     "tags": [
       "fashion",
       "online",
-      "delivery"
+      "delivery",
+      "gift"
     ],
     "redemptions": 2790,
     "dateAdded": "2026-10-26"
@@ -2214,7 +2248,8 @@
     "tags": [
       "fashion",
       "online",
-      "delivery"
+      "delivery",
+      "gift"
     ],
     "redemptions": 1987,
     "dateAdded": "2026-09-25"
@@ -2334,7 +2369,8 @@
       "fashion",
       "department store",
       "clothes",
-      "family"
+      "family",
+      "gift"
     ],
     "redemptions": 5372,
     "dateAdded": "2026-09-21"
@@ -2606,7 +2642,8 @@
       "fashion",
       "department store",
       "clothes",
-      "family"
+      "family",
+      "gift"
     ],
     "redemptions": 17200,
     "dateAdded": "2026-10-21"
@@ -2635,7 +2672,8 @@
       "fashion",
       "department store",
       "clothes",
-      "beauty"
+      "beauty",
+      "gift"
     ],
     "redemptions": 16100,
     "dateAdded": "2026-09-20"
@@ -2665,7 +2703,8 @@
       "books",
       "stationery",
       "kids",
-      "school"
+      "school",
+      "gift"
     ],
     "redemptions": 8636,
     "dateAdded": "2026-10-19"
@@ -2726,7 +2765,8 @@
       "tv",
       "phone",
       "appliance",
-      "gadget"
+      "gadget",
+      "gift"
     ],
     "redemptions": 9490,
     "dateAdded": "2026-10-26"
@@ -2757,7 +2797,8 @@
       "tv",
       "phone",
       "appliance",
-      "gadget"
+      "gadget",
+      "gift"
     ],
     "redemptions": 6826,
     "dateAdded": "2026-09-25"
@@ -2911,7 +2952,8 @@
       "home",
       "stationery",
       "minimal",
-      "lifestyle"
+      "lifestyle",
+      "gift"
     ],
     "redemptions": 9508,
     "dateAdded": "2026-10-20"
@@ -2941,7 +2983,8 @@
       "home",
       "stationery",
       "minimal",
-      "lifestyle"
+      "lifestyle",
+      "gift"
     ],
     "redemptions": 6844,
     "dateAdded": "2026-09-19"
@@ -3390,7 +3433,8 @@
     "tags": [
       "fashion",
       "online",
-      "delivery"
+      "delivery",
+      "gift"
     ],
     "redemptions": 8635,
     "dateAdded": "2026-10-01"
@@ -3419,7 +3463,8 @@
     "tags": [
       "fashion",
       "online",
-      "delivery"
+      "delivery",
+      "gift"
     ],
     "redemptions": 5971,
     "dateAdded": "2026-10-30"
@@ -3447,7 +3492,8 @@
       "concert",
       "festival",
       "music",
-      "edm"
+      "edm",
+      "gift"
     ],
     "valueThb": 2200,
     "redemptions": 1118,
@@ -3476,7 +3522,8 @@
       "concert",
       "festival",
       "music",
-      "edm"
+      "edm",
+      "gift"
     ],
     "valueThb": 3900,
     "redemptions": 925,
@@ -3535,7 +3582,8 @@
       "cafe",
       "drink",
       "latte",
-      "กาแฟ"
+      "กาแฟ",
+      "gift"
     ],
     "valueThb": 145,
     "redemptions": 12400,
@@ -3566,7 +3614,8 @@
       "film",
       "date night",
       "popcorn",
-      "หนัง"
+      "หนัง",
+      "gift"
     ],
     "valueThb": 240,
     "redemptions": 3828,
@@ -3597,7 +3646,8 @@
       "film",
       "date night",
       "popcorn",
-      "หนัง"
+      "หนัง",
+      "gift"
     ],
     "valueThb": 240,
     "redemptions": 3561,
@@ -3628,7 +3678,8 @@
       "film",
       "date night",
       "popcorn",
-      "หนัง"
+      "หนัง",
+      "gift"
     ],
     "valueThb": 120,
     "redemptions": 5352,
@@ -3659,7 +3710,8 @@
       "film",
       "date night",
       "popcorn",
-      "หนัง"
+      "หนัง",
+      "gift"
     ],
     "valueThb": 120,
     "redemptions": 5186,
@@ -3717,7 +3769,8 @@
       "donut",
       "dessert",
       "sweet",
-      "coffee"
+      "coffee",
+      "gift"
     ],
     "valueThb": 180,
     "redemptions": 4394,
@@ -3942,7 +3995,8 @@
     "tags": [
       "ice cream",
       "dessert",
-      "sweet"
+      "sweet",
+      "gift"
     ],
     "valueThb": 140,
     "redemptions": 4655,
@@ -3971,7 +4025,8 @@
       "dessert",
       "cafe",
       "toast",
-      "sweet"
+      "sweet",
+      "gift"
     ],
     "valueThb": 245,
     "redemptions": 3343,
@@ -3999,7 +4054,8 @@
     "tags": [
       "ice cream",
       "dessert",
-      "sweet"
+      "sweet",
+      "gift"
     ],
     "valueThb": 119,
     "redemptions": 4919,
@@ -4059,7 +4115,8 @@
       "cafe",
       "bakery",
       "dessert",
-      "กาแฟ"
+      "กาแฟ",
+      "gift"
     ],
     "valueThb": 150,
     "redemptions": 5388,
@@ -4087,7 +4144,8 @@
     "tags": [
       "concert",
       "ticket",
-      "music"
+      "music",
+      "gift"
     ],
     "valueThb": 500,
     "redemptions": 2062,
@@ -4116,7 +4174,8 @@
       "hotel",
       "buffet",
       "dinner",
-      "travel"
+      "travel",
+      "gift"
     ],
     "valueThb": 1590,
     "redemptions": 1262,
@@ -4145,7 +4204,8 @@
       "spa",
       "massage",
       "wellness",
-      "relax"
+      "relax",
+      "gift"
     ],
     "valueThb": 150,
     "redemptions": 4430,
@@ -4174,7 +4234,8 @@
       "hotel",
       "travel",
       "beach",
-      "holiday"
+      "holiday",
+      "gift"
     ],
     "valueThb": 3900,
     "redemptions": 951,
@@ -4204,7 +4265,8 @@
       "travel",
       "beach",
       "holiday",
-      "family"
+      "family",
+      "gift"
     ],
     "valueThb": 4800,
     "redemptions": 919,
@@ -4233,7 +4295,8 @@
       "kids",
       "family",
       "theme park",
-      "weekend"
+      "weekend",
+      "gift"
     ],
     "valueThb": 300,
     "redemptions": 2780,
@@ -4262,7 +4325,8 @@
       "kids",
       "family",
       "aquarium",
-      "weekend"
+      "weekend",
+      "gift"
     ],
     "valueThb": 330,
     "redemptions": 3488,
@@ -4290,7 +4354,8 @@
     "tags": [
       "kids",
       "family",
-      "weekend"
+      "weekend",
+      "gift"
     ],
     "valueThb": 400,
     "redemptions": 2365,
@@ -4487,7 +4552,8 @@
     "tags": [
       "jewelry",
       "gift",
-      "luxury"
+      "luxury",
+      "gift"
     ],
     "redemptions": 3834,
     "dateAdded": "2026-09-29"
@@ -4516,7 +4582,8 @@
       "bag",
       "handbag",
       "shoes",
-      "กระเป๋า"
+      "กระเป๋า",
+      "gift"
     ],
     "redemptions": 3837,
     "dateAdded": "2026-10-28"
@@ -4545,7 +4612,8 @@
     "tags": [
       "beauty",
       "skincare",
-      "luxury"
+      "luxury",
+      "gift"
     ],
     "redemptions": 3840,
     "dateAdded": "2026-09-27"
@@ -4572,7 +4640,8 @@
     "topsFamily": false,
     "tags": [
       "beauty",
-      "skincare"
+      "skincare",
+      "gift"
     ],
     "redemptions": 3843,
     "dateAdded": "2026-10-26"
@@ -4602,7 +4671,8 @@
       "beauty",
       "skincare",
       "luxury",
-      "perfume"
+      "perfume",
+      "gift"
     ],
     "redemptions": 3846,
     "dateAdded": "2026-09-25"
@@ -4630,7 +4700,8 @@
     "tags": [
       "beauty",
       "skincare",
-      "japan"
+      "japan",
+      "gift"
     ],
     "redemptions": 3849,
     "dateAdded": "2026-10-24"
@@ -4658,7 +4729,8 @@
     "topsFamily": false,
     "tags": [
       "beauty",
-      "skincare"
+      "skincare",
+      "gift"
     ],
     "redemptions": 3852,
     "dateAdded": "2026-09-23"
@@ -4684,7 +4756,8 @@
     "validUntil": "2026-11-30",
     "topsFamily": false,
     "tags": [
-      "fashion"
+      "fashion",
+      "gift"
     ],
     "redemptions": 3855,
     "dateAdded": "2026-10-22"
@@ -4737,7 +4810,8 @@
     "validUntil": "2026-12-15",
     "topsFamily": false,
     "tags": [
-      "fashion"
+      "fashion",
+      "gift"
     ],
     "redemptions": 3924,
     "dateAdded": "2026-10-29"
@@ -4767,7 +4841,8 @@
       "electronics",
       "appliance",
       "vacuum",
-      "hair"
+      "hair",
+      "gift"
     ],
     "redemptions": 3927,
     "dateAdded": "2026-09-28"
@@ -4795,7 +4870,8 @@
     "tags": [
       "electronics",
       "tv",
-      "phone"
+      "phone",
+      "gift"
     ],
     "redemptions": 3930,
     "dateAdded": "2026-10-27"
@@ -5279,7 +5355,8 @@
       "cafe",
       "drink",
       "latte",
-      "กาแฟ"
+      "กาแฟ",
+      "gift"
     ],
     "redemptions": 33400,
     "dateAdded": "2026-09-19"
@@ -5310,7 +5387,8 @@
       "cafe",
       "drink",
       "latte",
-      "กาแฟ"
+      "กาแฟ",
+      "gift"
     ],
     "redemptions": 17662,
     "dateAdded": "2026-10-27"
@@ -5518,7 +5596,8 @@
       "donut",
       "dessert",
       "sweet",
-      "coffee"
+      "coffee",
+      "gift"
     ],
     "redemptions": 23008,
     "dateAdded": "2026-09-20"
@@ -5549,7 +5628,8 @@
       "makeup",
       "skincare",
       "cosmetics",
-      "เครื่องสำอาง"
+      "เครื่องสำอาง",
+      "gift"
     ],
     "redemptions": 11300,
     "dateAdded": "2026-10-19"
@@ -5580,7 +5660,8 @@
       "makeup",
       "skincare",
       "cosmetics",
-      "เครื่องสำอาง"
+      "เครื่องสำอาง",
+      "gift"
     ],
     "redemptions": 9516,
     "dateAdded": "2026-09-18"
@@ -5810,7 +5891,8 @@
     "validUntil": "2026-12-15",
     "topsFamily": false,
     "tags": [
-      "fashion"
+      "fashion",
+      "gift"
     ],
     "redemptions": 9632,
     "dateAdded": "2026-09-19"
@@ -6393,7 +6475,8 @@
       "cafe",
       "drink",
       "latte",
-      "กาแฟ"
+      "กาแฟ",
+      "gift"
     ],
     "redemptions": 38900,
     "dateAdded": "2026-09-28"
@@ -6424,7 +6507,8 @@
       "cafe",
       "drink",
       "latte",
-      "กาแฟ"
+      "กาแฟ",
+      "gift"
     ],
     "redemptions": 24100,
     "dateAdded": "2026-10-27"
@@ -6456,7 +6540,8 @@
       "skincare",
       "luxury",
       "perfume",
-      "เครื่องสำอาง"
+      "เครื่องสำอาง",
+      "gift"
     ],
     "redemptions": 7737,
     "dateAdded": "2026-09-26"
@@ -6488,7 +6573,8 @@
       "skincare",
       "luxury",
       "perfume",
-      "เครื่องสำอาง"
+      "เครื่องสำอาง",
+      "gift"
     ],
     "redemptions": 6194,
     "dateAdded": "2026-10-25"
@@ -6520,7 +6606,8 @@
       "handbag",
       "designer",
       "premium",
-      "กระเป๋า"
+      "กระเป๋า",
+      "gift"
     ],
     "redemptions": 4253,
     "dateAdded": "2026-10-03"
@@ -6551,7 +6638,8 @@
       "bag",
       "handbag",
       "leather",
-      "กระเป๋า"
+      "กระเป๋า",
+      "gift"
     ],
     "redemptions": 4500,
     "dateAdded": "2026-11-01"
@@ -6581,7 +6669,8 @@
       "bag",
       "handbag",
       "shoes",
-      "กระเป๋า"
+      "กระเป๋า",
+      "gift"
     ],
     "redemptions": 9504,
     "dateAdded": "2026-10-01"
@@ -6610,7 +6699,8 @@
     "tags": [
       "jewelry",
       "gift",
-      "luxury"
+      "luxury",
+      "gift"
     ],
     "redemptions": 7841,
     "dateAdded": "2026-10-30"
@@ -6640,7 +6730,8 @@
       "kids",
       "family",
       "clothes",
-      "toys"
+      "toys",
+      "gift"
     ],
     "redemptions": 9512,
     "dateAdded": "2026-09-29"
@@ -6669,7 +6760,8 @@
     "tags": [
       "kids",
       "baby",
-      "family"
+      "family",
+      "gift"
     ],
     "redemptions": 7849,
     "dateAdded": "2026-10-28"
@@ -6698,7 +6790,8 @@
     "tags": [
       "ice cream",
       "dessert",
-      "sweet"
+      "sweet",
+      "gift"
     ],
     "redemptions": 12235,
     "dateAdded": "2026-09-27"
@@ -6728,7 +6821,8 @@
       "dessert",
       "cafe",
       "toast",
-      "sweet"
+      "sweet",
+      "gift"
     ],
     "redemptions": 17706,
     "dateAdded": "2026-10-26"
@@ -6760,7 +6854,8 @@
       "film",
       "date night",
       "popcorn",
-      "หนัง"
+      "หนัง",
+      "gift"
     ],
     "redemptions": 16528,
     "dateAdded": "2026-09-25"
@@ -6792,7 +6887,8 @@
       "film",
       "date night",
       "popcorn",
-      "หนัง"
+      "หนัง",
+      "gift"
     ],
     "redemptions": 17714,
     "dateAdded": "2026-10-24"
@@ -6855,7 +6951,8 @@
       "makeup",
       "skincare",
       "cosmetics",
-      "เครื่องสำอาง"
+      "เครื่องสำอาง",
+      "gift"
     ],
     "redemptions": 8173,
     "dateAdded": "2026-10-31"
@@ -6886,7 +6983,8 @@
       "cafe",
       "drink",
       "latte",
-      "กาแฟ"
+      "กาแฟ",
+      "gift"
     ],
     "redemptions": 12890,
     "dateAdded": "2026-09-30"

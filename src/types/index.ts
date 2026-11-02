@@ -135,12 +135,6 @@ export interface PointsEvent {
   points: number;
 }
 
-export interface StoreLocation {
-  brandId: string;
-  store: string;
-  branch: string;
-}
-
 /** Full The 1 experience definition for one persona. */
 export interface AppUserProfile {
   id: AppUserId;
@@ -166,8 +160,6 @@ export interface AppUserProfile {
   /** Challenges already joined, with spend progress in THB. */
   joined: Record<string, number>;
   hasRedzCard: boolean;
-  /** Location signal available for simulation. */
-  location?: StoreLocation;
   bannerVariants: Banner[];
   onboarding?: OnboardingStep[];
   brandRow: string[];
@@ -185,7 +177,7 @@ export interface AppUserProfile {
 /* ------------------------------------------------------------------ */
 
 export interface RankFactor {
-  key: 'affinity' | 'margin' | 'popularity' | 'location' | 'urgency' | 'gamification' | 'pinned';
+  key: 'affinity' | 'margin' | 'popularity' | 'urgency' | 'gamification' | 'pinned';
   label: string;
   /** Normalised contribution 0..1 before weighting. */
   value: number;

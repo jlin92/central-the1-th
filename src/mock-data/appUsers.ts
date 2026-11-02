@@ -13,8 +13,7 @@ import type { AppUserId, AppUserProfile } from '@/types';
  *  - Persona 2 (Nat): RETURNING Level 3 member, weekly Tops shopper, mum of
  *    two, Sephora regular, Central The 1 REDZ cardholder. 24,850 points with
  *    3,200 expiring. Sees expiry urgency, affinity + user-margin sorting,
- *    suppression of what she already has, challenge progress, and a store
- *    location signal that re-sorts the Tops hub when she is in store.
+ *    suppression of what she already has, and challenge progress.
  *
  * All values are illustrative for demonstration only.
  */
@@ -145,7 +144,6 @@ export const appUserProfiles: Record<AppUserId, AppUserProfile> = {
     walletIds: ['200042'],
     joined: { '200094': 3850 },
     hasRedzCard: true,
-    location: { brandId: 'tops', store: 'Tops', branch: 'Central Rama 9' },
     bannerVariants: [
       {
         id: 'p2-expiry',
@@ -207,20 +205,19 @@ export const appUserProfiles: Record<AppUserId, AppUserProfile> = {
       { icon: 'tv', title: 'Power Buy · Samsung 65" TV', detail: 'Sun 20 Sep · ฿27,990 · x3 REDZ', points: 3359 },
     ],
     whyShownNow:
-      'Nat is a Level 3 member who shops Tops in store every week, has two kids and a Sephora habit, and holds 24,850 points with 3,200 expiring on 31 Dec. DY leads with expiry urgency and a concrete use for those points, ranks Only for You by her affinities and by user margin, and suppresses what she already has (the Starbucks coupon she redeemed, the Tops coupon in her wallet, the TV category she just bought, card offers she already holds). When her phone reports she is inside Tops Central Rama 9, the Tops hub re-sorts so in-store coupons come first — not the newest Tops Online ones.',
+      'Nat is a Level 3 member who shops Tops in store every week, has two kids and a Sephora habit, and holds 24,850 points with 3,200 expiring on 31 Dec. DY leads with expiry urgency and a concrete use for those points, ranks Only for You by her affinities and by user margin, and suppresses what she already has (the Starbucks coupon she redeemed, the Tops coupon in her wallet, the TV category she just bought, card offers she already holds). On the Tops hub, in-store Tops coupons she actually uses rank first — not the newest Tops Online ones.',
     why: [
       { icon: 'hourglass_top', label: '3,200 pts expiring', detail: 'Expiry drives the home banner and the Redeem Cash shelf.' },
       { icon: 'shopping_basket', label: 'Weekly Tops in-store', detail: 'Grocery + Tops brand affinity; Tops Online coupons deprioritised.' },
       { icon: 'family_restroom', label: 'The 1 Family · 2 kids', detail: 'Kids perks and family missions eligible and promoted.' },
       { icon: 'block', label: 'Already has / bought', detail: 'Redeemed Starbucks ฿50, Tops ฿20 in wallet, TV from Power Buy, REDZ card — all suppressed.' },
-      { icon: 'location_on', label: 'Store location (simulated)', detail: 'When at Tops Central Rama 9, in-store Tops coupons rank first.' },
     ],
     demoObjectives: [
       'Expiry urgency with a personal, concrete use for the points.',
       'Brand hub sorting: Tops in-store coupons first, not newest Tops Online — compare with “The 1 today”.',
       'User-margin algorithm: best value per point surfaces partner perks over 8:1 cash.',
       'Suppress redeemed / wallet / recently-purchased / cardholder offers.',
-      'Location signal re-sorts the hub at the moment of purchase.',
+      'Shopping Muse answers value, Tops, family and gifting questions from the same feed.',
     ],
   },
 };

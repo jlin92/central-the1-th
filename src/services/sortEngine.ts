@@ -1,4 +1,4 @@
-import type { AppUserProfile, Offer, RankFactor, ScoredOffer, StoreLocation, Tier } from '@/types';
+import type { AppUserProfile, Offer, RankFactor, ScoredOffer, Tier } from '@/types';
 import { daysUntil } from '@/hooks/utils';
 import { pointsPerBaht } from '@/mock-data/offers';
 
@@ -12,7 +12,7 @@ import { pointsPerBaht } from '@/mock-data/offers';
  *     already in the wallet, expired.
  *  3. The remainder is scored with a weighted blend (Algorithm Studio style):
  *     real-time affinity, user margin (highest value for lowest points / spend),
- *     popularity, store location, urgency (ending soon / running out) and a
+ *     popularity, urgency (ending soon / running out) and a
  *     gamification boost for members short of points.
  *
  *  "today" mode reproduces the current The 1 behaviour: newest first, no
@@ -25,7 +25,6 @@ export interface RankContext {
   profile: AppUserProfile;
   points: number;
   sessionAffinity: Record<string, number>;
-  location: StoreLocation | null;
   redeemedIds: Set<string>;
   walletIds: Set<string>;
   joinedIds: Set<string>;
@@ -93,15 +92,6 @@ function urgencyFor(o: Offer): { value: number; note?: string } {
   return { value: 0 };
 }
 
-function locationFor(o: Offer, loc: StoreLocation | null): { value: number; note?: string } {
-  if (!loc) return { value: 0 };
-  const inStore = o.channel.includes('In-store');
-  if (o.brandId === loc.brandId && inStore) return { value: 1, note: `Usable at ${loc.store} now` };
-  if (o.brandId === loc.brandId && !inStore) return { value: 0, note: 'Online only — not usable here' };
-  if (o.topsFamily && inStore) return { value: 0.35, note: 'Same store family' };
-  return { value: 0.1 };
-}
-
 /** Merchandising rule that removes the offer, if any. */
 export function exclusionFor(o: Offer, ctx: RankContext): string | undefined {
   if (!o.inStock) return 'Out of stock';
@@ -116,7 +106,6 @@ export function exclusionFor(o: Offer, ctx: RankContext): string | undefined {
   }
   if (o.memberLevel === 'The 1 Family' && !ctx.profile.affinities.Kids) return 'The 1 Family members only';
   if (o.offerType === 'Card Offer' && ctx.profile.hasRedzCard) return 'Already a cardholder';
-  if (ctx.location && o.topsFamily && o.channel === 'Online') return 'Online only — not usable in store';
   return undefined;
 }
 
@@ -125,7 +114,6 @@ export function scoreOffer(o: Offer, ctx: RankContext, maxPop: number): ScoredOf
   const aff = affinityFor(o, ctx);
   const margin = marginFor(o);
   const urg = urgencyFor(o);
-  const loc = locationFor(o, ctx.location);
   const pop = clamp(Math.log10(1 + o.redemptions) / Math.log10(1 + maxPop));
   const shortOfPoints = ctx.points < 1000;
   const recentlyBought = ctx.profile.recentPurchases.includes(o.category) && o.offerType !== 'Challenge';
@@ -134,7 +122,6 @@ export function scoreOffer(o: Offer, ctx: RankContext, maxPop: number): ScoredOf
     { key: 'affinity', label: 'Affinity', value: recentlyBought ? 0.05 : aff.value, weight: 0.4, note: recentlyBought ? 'Bought recently — cadence suppression' : aff.note },
     { key: 'margin', label: 'User margin', value: margin.value, weight: 0.25, note: margin.note },
     { key: 'popularity', label: 'Popularity', value: pop, weight: 0.1, note: `${o.redemptions.toLocaleString('en-US')} redeemed · 30d` },
-    { key: 'location', label: 'Store location', value: loc.value, weight: ctx.location ? 0.2 : 0, note: loc.note },
     { key: 'urgency', label: 'Urgency', value: urg.value, weight: 0.1, note: urg.note },
     {
       key: 'gamification',
@@ -203,10 +190,10 @@ export function rankOffers(list: Offer[], ctx: RankContext, opts: { diversify?: 
 export const rankedOffers = (list: Offer[], ctx: RankContext): Offer[] => rankOffers(list, ctx).ranked.map((s) => s.offer);
 
 /** Display priority for factor notes: the most situational signal wins. */
-export const factorPriority: RankFactor['key'][] = ['pinned', 'location', 'urgency', 'gamification', 'affinity', 'margin', 'popularity'];
+export const factorPriority: RankFactor['key'][] = ['pinned', 'urgency', 'gamification', 'affinity', 'margin', 'popularity'];
 
 /** The single most relevant reason to show on a card. */
-export function primaryReason(s: ScoredOffer, allow: RankFactor['key'][] = ['pinned', 'location', 'urgency', 'gamification', 'affinity']): string | undefined {
+export function primaryReason(s: ScoredOffer, allow: RankFactor['key'][] = ['pinned', 'urgency', 'gamification', 'affinity']): string | undefined {
   for (const key of factorPriority) {
     if (!allow.includes(key)) continue;
     const f = s.factors.find((x) => x.key === key && x.note && x.weight > 0 && x.value > 0);

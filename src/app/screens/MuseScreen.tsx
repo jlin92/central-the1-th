@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useDemo } from '@/app/DemoContext';
 import type { MuseMessage, MuseReply } from '@/types';
-import { intentAffinity, musePromptsByUser, proactiveNudgeByUser, replyForIntent, replyForText } from '@/mock-data/muse';
+import { commonPrompts, intentAffinity, musePromptsByUser, proactiveNudgeByUser, replyForIntent, replyForText, type MuseContext } from '@/mock-data/muse';
 import { offers } from '@/mock-data/offers';
 import { OfferCard } from '@/components/offers/OfferCard';
 import { Icon } from '@/components/ui/Icon';
@@ -13,9 +13,10 @@ const nextId = () => `m-${++msgSeq}`;
 
 /** Chapter 9 — The 1 assistant (Shopping Muse): support + guided offer discovery. */
 export function MuseScreen() {
-  const { appUser, appUserProfile, goToChapter, openBrand, trackAffinity, musePrefill, clearMusePrefill, location } = useDemo();
+  const { appUser, goToChapter, openBrand, trackAffinity, musePrefill, clearMusePrefill, rankContext } = useDemo();
   const prompts = musePromptsByUser[appUser];
   const nudge = proactiveNudgeByUser[appUser];
+  const museCtx: MuseContext = { points: rankContext.points, walletIds: rankContext.walletIds, redeemedIds: rankContext.redeemedIds, joinedIds: rankContext.joinedIds };
   const [messages, setMessages] = useState<MuseMessage[]>([]);
   const [typing, setTyping] = useState(false);
   const [input, setInput] = useState('');
@@ -55,15 +56,16 @@ export function MuseScreen() {
     const q = musePrefill;
     clearMusePrefill();
     setFromSearch(q);
-    const text = /^(is|what|how|show|find|use|which)/i.test(q) ? q : `Best ${q} deal for me today?`;
-    const { reply, intent } = replyForText(appUser, location && /here|tops/i.test(q) ? 'here' : q);
+    const isGift = /(gift|present|birthday|anniversary|ของขวัญ)/i.test(q);
+    const text = isGift ? `Help me find a gift — I searched “${q}”` : /^(is|what|how|show|find|use|which|i |any)/i.test(q) ? q : `Best ${q} deal for me today?`;
+    const { reply, intent } = replyForText(appUser, isGift ? 'gift' : q, museCtx);
     send(text, reply, intent);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [musePrefill]);
 
   const onPrompt = (label: string, intent: string) => send(label, replyForIntent(appUser, intent), intent);
   const onText = (q: string) => {
-    const { reply, intent } = replyForText(appUser, q);
+    const { reply, intent } = replyForText(appUser, q, museCtx);
     send(q, reply, intent);
   };
   const onSubmit = () => {
@@ -98,9 +100,9 @@ export function MuseScreen() {
                 <Icon name="auto_awesome" filled className="text-[15px]" />
               </span>
               <div className="flex flex-col items-start gap-2 rounded-2xl rounded-tl-md bg-white px-4 py-3 shadow-card">
-                <p className="text-sm text-on-surface">{location ? `Hi ${appUserProfile.firstName} — you’re at ${location.store} ${location.branch}. Want to see what you can use at the till right now?` : nudge.text}</p>
-                <button type="button" onClick={() => (location ? onPrompt('What can I use here right now?', 'here') : onPrompt(nudge.cta, nudge.intent))} className="rounded-md bg-the1-black px-3.5 py-2 text-[12px] font-semibold text-white">
-                  {location ? 'Show what I can use here' : nudge.cta}
+                <p className="text-sm text-on-surface">{nudge.text}</p>
+                <button type="button" onClick={() => onPrompt(nudge.cta, nudge.intent)} className="rounded-md bg-the1-black px-3.5 py-2 text-[12px] font-semibold text-white">
+                  {nudge.cta}
                 </button>
               </div>
             </div>
@@ -114,6 +116,20 @@ export function MuseScreen() {
                   </span>
                   <span className="text-xs font-semibold leading-tight text-on-surface">{p.label}</span>
                 </button>
+              ))}
+            </div>
+
+            <p className="text-center text-xs font-semibold text-on-surface-variant">Or ask anything, like…</p>
+            <div className="no-scrollbar -mx-4 flex flex-col gap-2 overflow-x-auto px-4 pb-1">
+              {[commonPrompts.filter((_, i) => i % 2 === 0), commonPrompts.filter((_, i) => i % 2 === 1)].map((row, r) => (
+                <div key={r} className="flex w-max gap-2">
+                  {row.map((p) => (
+                    <button key={p.label} type="button" onClick={() => onText(p.label)} className="flex shrink-0 items-center gap-1.5 rounded-full border border-outline-variant bg-white px-3 py-1.5 text-[11px] font-semibold text-on-surface shadow-card">
+                      <Icon name={p.icon} className="text-[14px] text-primary" />
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
               ))}
             </div>
           </div>

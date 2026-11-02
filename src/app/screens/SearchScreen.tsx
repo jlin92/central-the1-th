@@ -8,9 +8,10 @@ import { Chip, SortIndicator } from '@/components/offers/Primitives';
 import { Icon } from '@/components/ui/Icon';
 import { Disclaimer } from '@/components/ui/Card';
 import { settings } from '@/mock-data/settings';
-import { brandStyle, catalogue, categoryChips, chipAffinity, chipById, expandQuery, searchOffers } from '@/mock-data/offers';
+import { brandStyle, catalogue, categoryChips, chipAffinity, chipById, expandQuery, isGiftQuery, popularCoupons, searchOffers } from '@/mock-data/offers';
 import { primaryReason, rankOffers, topSessionAffinity } from '@/services/sortEngine';
 import type { Offer, ScoredOffer } from '@/types';
+import { cn } from '@/hooks/utils';
 
 const hubBrands = ['tops', 'central-department-store', 'robinson', 'power-buy', 'supersports', 'sephora', 'starbucks', 'b2s', 'muji', 'officemate'];
 
@@ -49,18 +50,24 @@ export function SearchScreen() {
   const row2 = chips.filter((_, i) => i % 2 === 1);
 
   const q = searchQuery.trim();
+  const gift = isGiftQuery(q);
   const result = useMemo(() => {
     if (q) {
       const { exact, semantic } = searchOffers(q);
       const a = rankOffers(exact, rankContext);
-      const b = rankOffers(semantic, rankContext);
-      return { title: `Results for “${q}”`, ranked: [...a.ranked, ...b.ranked], excluded: [...a.excluded, ...b.excluded], semanticFrom: a.ranked.length, semanticCount: b.ranked.length };
+      // Gift queries are intentionally broad: keep the default popularity order and let the assistant narrow it down.
+      const b = isGiftQuery(q) ? { ranked: rankOffers(semantic, { ...rankContext, mode: 'today' }).ranked.sort((x, y) => y.offer.redemptions - x.offer.redemptions), excluded: [] as ScoredOffer[] } : rankOffers(semantic, rankContext);
+      if (!a.ranked.length && !b.ranked.length) {
+        const fallback = rankOffers(popularCoupons(8), { ...rankContext, mode: 'today' });
+        return { title: `No exact match for “${q}” · popular right now`, ranked: fallback.ranked, excluded: [] as ScoredOffer[], semanticFrom: -1, semanticCount: 0, fallback: true };
+      }
+      return { title: `Results for “${q}”`, ranked: [...a.ranked, ...b.ranked], excluded: [...a.excluded, ...b.excluded], semanticFrom: a.ranked.length, semanticCount: b.ranked.length, fallback: false };
     }
     const chip = activeChip ? chipById(activeChip) : undefined;
     // Category chips list coupons/perks like the live app; app deals and challenges have their own shelves.
     const pool = chip ? catalogue.filter((o) => chip.match(o) && (['cyber', 'perks', 'card'].includes(chip.id) || !['Central App Deal', 'Challenge', 'Insurance'].includes(o.offerType))) : plpPool();
     const r = rankOffers(pool, rankContext);
-    return { title: chip ? chip.label : 'All coupons', ...r, semanticFrom: -1, semanticCount: 0 };
+    return { title: chip ? chip.label : 'All coupons', ...r, semanticFrom: -1, semanticCount: 0, fallback: false };
   }, [q, activeChip, rankContext]);
 
   useEffect(() => {
@@ -126,27 +133,27 @@ export function SearchScreen() {
           </div>
         )}
 
-        {/* Smart search → assistant hand-off */}
+        {/* Smart search → assistant hand-off (gifting gets a guided prompt) */}
         {q && (
           <button
             type="button"
             onClick={() => askMuse(q)}
-            className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary-fixed p-3 text-left"
+            className={cn('flex items-center gap-3 rounded-2xl border p-3 text-left', gift ? 'border-primary/40 bg-the1-black text-white' : 'border-primary/20 bg-primary-fixed')}
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full muse-gradient text-white">
-              <Icon name="auto_awesome" filled className="text-[18px]" />
+            <span className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white', gift ? 'bg-white/15' : 'muse-gradient')}>
+              <Icon name={gift ? 'redeem' : 'auto_awesome'} filled className="text-[18px]" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-[13px] font-bold text-on-surface">Ask The 1 assistant about “{q}”</span>
-              <span className="block text-[11px] text-on-surface-variant">Get the best {q} deal for you, with points you can use</span>
+              <span className={cn('block text-[13px] font-bold', gift ? 'text-white' : 'text-on-surface')}>{gift ? 'Looking for a gift? Let the assistant find the best deal' : `Ask The 1 assistant about “${q}”`}</span>
+              <span className={cn('block text-[11px]', gift ? 'text-white/75' : 'text-on-surface-variant')}>{gift ? 'Tell it who it’s for and your budget — it picks free coupons and perks worth your points' : `Get the best ${q} deal for you, with points you can use`}</span>
             </span>
-            <Icon name="chevron_right" className="text-on-surface-variant" />
+            <Icon name="chevron_right" className={gift ? 'text-white/80' : 'text-on-surface-variant'} />
           </button>
         )}
 
         <SortIndicator
-          live={sortMode === 'dy' && (!!live || !!rankContext.location)}
-          label={sortMode === 'dy' ? (rankContext.location ? `Sorted for you · at ${rankContext.location.store}` : live ? `Sorted for you · ${live.replace(/^brand:/, '')} first` : 'Sorted for you by Dynamic Yield') : 'The 1 today · newest first'}
+          live={sortMode === 'dy' && !!live && !gift && !result.fallback}
+          label={result.fallback || gift ? 'Default order · most collected first' : sortMode === 'dy' ? (live ? `Sorted for you · ${live.replace(/^brand:/, '')} first` : 'Sorted for you by Dynamic Yield') : 'The 1 today · newest first'}
           onWhy={openWhy}
         />
 
@@ -162,7 +169,7 @@ export function SearchScreen() {
           )}
         </div>
 
-        {q && result.semanticCount > 0 && (
+        {q && result.semanticCount > 0 && !gift && (
           <p className="-mt-1 flex items-start gap-1.5 text-[11px] text-on-surface-variant">
             <Icon name="psychology" className="mt-px text-[14px] text-primary" />
             <span>

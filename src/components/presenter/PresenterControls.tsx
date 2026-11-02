@@ -78,7 +78,7 @@ function Toggle({ on, onChange, label, sub, icon, disabled }: { on: boolean; onC
 
 /** The presenter control panel used on desktop side rail and mobile sheet. */
 export function PresenterControls({ onClose }: { onClose?: () => void }) {
-  const { nextChapter, prevChapter, resetDemo, appUser, setAppUser, appUserProfile, points, wallet, usedIds, joined, sessionAffinity, location, toggleLocation, sortMode, setSortMode, bannerIndex, setBannerIndex } = useDemo();
+  const { nextChapter, prevChapter, resetDemo, appUser, setAppUser, appUserProfile, points, wallet, usedIds, joined, sessionAffinity, sortMode, setSortMode, bannerIndex, setBannerIndex } = useDemo();
   const [showStory, setShowStory] = useState(false);
   const liveCount = Object.keys(sessionAffinity).filter((k) => !k.startsWith('tag:')).length;
 
@@ -117,7 +117,6 @@ export function PresenterControls({ onClose }: { onClose?: () => void }) {
         <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted">Dynamic Yield controls</p>
         <div className="flex flex-col gap-1.5">
           <Toggle on={sortMode === 'today'} onChange={() => setSortMode(sortMode === 'today' ? 'dy' : 'today')} label="Compare: The 1 today" sub={sortMode === 'today' ? 'Newest first, no filtering (current app)' : 'Showing DY sorting + merchandising rules'} icon="compare_arrows" />
-          <Toggle on={!!location} onChange={toggleLocation} disabled={!appUserProfile.location} label="Store location signal" sub={appUserProfile.location ? `${appUserProfile.location.store} ${appUserProfile.location.branch}` : 'Not available for this persona'} icon="location_on" />
         </div>
         <div className="mt-2">
           <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-muted">Generative banner variant</p>
@@ -172,7 +171,7 @@ export function PresenterControls({ onClose }: { onClose?: () => void }) {
         ↺ Reset demo
       </Button>
       <p className="text-[10px] leading-relaxed text-muted">
-        Press <kbd className="rounded bg-black/[0.06] px-1">P</kbd> to toggle this panel, <kbd className="rounded bg-black/[0.06] px-1">T</kbd> to flip “The 1 today”, <kbd className="rounded bg-black/[0.06] px-1">L</kbd> for the location signal. Tap “Why this?” in the app to open the reasoning rail.
+        Press <kbd className="rounded bg-black/[0.06] px-1">P</kbd> to toggle this panel and <kbd className="rounded bg-black/[0.06] px-1">T</kbd> to flip “The 1 today”. Tap “Why this?” in the app to open the reasoning rail.
       </p>
     </div>
   );

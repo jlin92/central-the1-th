@@ -11,7 +11,7 @@ import { topSessionAffinity } from '@/services/sortEngine';
  * selected member is seeing right now.
  */
 export function WhyShownPanel({ onClose }: { onClose?: () => void }) {
-  const { appUserProfile, chapter, sessionAffinity, ranking, sortMode, location, bannerIndex } = useDemo();
+  const { appUserProfile, chapter, sessionAffinity, ranking, sortMode, bannerIndex } = useDemo();
   const { name, context, why, whyShownNow } = appUserProfile;
   const screen = chapterById(chapter);
   const liveSignals = Object.entries(sessionAffinity)
@@ -23,7 +23,7 @@ export function WhyShownPanel({ onClose }: { onClose?: () => void }) {
   const treatment = (() => {
     switch (screen.key) {
       case 'home': {
-        const banner = location ? 'Location-triggered banner (store signal from the app)' : isNew && live && liveBanner(live) ? `Generated banner from live “${live}” affinity` : `Generative banner variant ${String.fromCharCode(65 + bannerIndex)} · ${appUserProfile.bannerVariants[bannerIndex]?.note ?? ''}`;
+        const banner = isNew && live && liveBanner(live) ? `Generated banner from live “${live}” affinity` : `Generative banner variant ${String.fromCharCode(65 + bannerIndex)} · ${appUserProfile.bannerVariants[bannerIndex]?.note ?? ''}`;
         return `${banner}. ${appUserProfile.homeSections.find((s) => s.id === 'foryou')?.strategy ?? ''}`;
       }
       case 'search':
@@ -33,13 +33,11 @@ export function WhyShownPanel({ onClose }: { onClose?: () => void }) {
       case 'brand':
         return sortMode === 'today'
           ? 'The 1 today: newest first, no filtering — Tops Online coupons sit on top for an in-store shopper, out-of-stock and wallet items still show.'
-          : location
-            ? 'Store-location signal: in-store Tops coupons rank first, online-only coupons hidden, same-family formats (Tops daily, Food Hall) demoted.'
-            : 'Brand hub sorted by affinity (weekly in-store Tops), user margin and popularity; wallet / redeemed / OOS filtered.';
+          : 'Brand hub sorted by affinity (weekly in-store Tops), user margin and popularity; wallet / redeemed / OOS filtered.';
       case 'detail':
         return isNew ? 'Eligibility + value panel; if short of points, a challenge that earns the gap is recommended (gamification next-best action).' : 'Value panel shows points-per-baht vs the 8:1 benchmark; related offers from the same brand/category; challenge progress where joined.';
       case 'coupons':
-        return 'Wallet re-orders usable-here coupons to the top when in store; suggestions below use the Only for You ranking.';
+        return 'Suggestions below the wallet use the Only for You ranking.';
       case 'challenge':
         return isNew ? 'Earn boost: with a low balance, challenges are promoted and sorted easiest-to-earn first.' : 'Targeted mission pinned; joined challenge shows live progress; others ranked by her brand affinities.';
       case 'redeem':
@@ -47,7 +45,7 @@ export function WhyShownPanel({ onClose }: { onClose?: () => void }) {
       case 'account':
         return 'Level-aware benefits and progress; points history from offline transactions feeds affinity (Tops, Sephora, Power Buy).';
       default:
-        return isNew ? 'Proactive education nudge · guided discovery prompts; each intent updates affinity in real time.' : location ? 'Location-aware proactive nudge · in-store usable coupons.' : 'Proactive expiry nudge · value-ranked results · redeemed-aware answers.';
+        return isNew ? 'Proactive education nudge · guided discovery prompts; each intent updates affinity in real time.' : 'Proactive expiry nudge · value-ranked results · redeemed-aware answers.';
     }
   })();
 
@@ -93,12 +91,6 @@ export function WhyShownPanel({ onClose }: { onClose?: () => void }) {
 
       <div className="flex flex-col gap-2">
         <p className="text-[11px] font-bold uppercase tracking-wide text-muted">Live session signals</p>
-        {location && (
-          <span className="flex w-fit items-center gap-1 rounded-full bg-success px-2.5 py-1 text-[10px] font-semibold text-white">
-            <Icon name="location_on" filled className="text-[12px]" />
-            At {location.store} {location.branch}
-          </span>
-        )}
         {liveSignals.length === 0 ? (
           <p className="rounded-xl border border-dashed border-black/[0.12] bg-white/60 p-3 text-[11px] text-muted">Nothing yet — {isNew ? 'ranking is popularity-based. Tap a chip, open an offer or ask the assistant and come back.' : 'ranking uses her historic affinities. Browse to add live signals on top.'}</p>
         ) : (

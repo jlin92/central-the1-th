@@ -31,10 +31,9 @@ export function DetailScreen() {
 }
 
 function DetailBody({ o }: { o: Offer }) {
-  const { points, rankContext, openWhy, askMuse, location, joined, joinChallenge } = useDemo();
+  const { points, rankContext, openWhy, askMuse, joined, joinChallenge } = useDemo();
   const action = useOfferAction(o);
   const badge = autoBadge(o);
-  const here = location && o.brandId === location.brandId && o.channel.includes('In-store');
   const ppb = pointsPerBaht(o);
   const value = offerValueThb(o);
   const gap = o.pointsCost - points;
@@ -50,11 +49,7 @@ function DetailBody({ o }: { o: Offer }) {
         <div className="absolute right-3 top-3">
           <WhyButton onClick={openWhy} dark />
         </div>
-        {(here || badge) && (
-          <span className={cn('absolute bottom-3 left-3 rounded px-2 py-1 text-[11px] font-bold text-white', here ? 'bg-success' : 'bg-primary')}>
-            {here ? `Use here · ${location!.store} ${location!.branch}` : badge}
-          </span>
-        )}
+        {badge && <span className="absolute bottom-3 left-3 rounded bg-primary px-2 py-1 text-[11px] font-bold text-white">{badge}</span>}
       </div>
 
       <div className="flex flex-col gap-3 px-3 pt-3">

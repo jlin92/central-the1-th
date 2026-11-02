@@ -1,10 +1,10 @@
 # The 1 × Dynamic Yield — Presenter Cheat Sheet
 
-**One-line pitch:** *Dynamic Yield turns The 1's static coupon shelves into a 1:1 experience — sorting every hub by real-time affinity and user margin, hiding what a member can't use, promoting ways to earn, re-sorting at the moment of purchase in store, and letting members ask for what they want through a Shopping Muse assistant that answers from the same offer feed.*
+**One-line pitch:** *Dynamic Yield turns The 1's static coupon shelves into a 1:1 experience — sorting every hub by real-time affinity and user margin, hiding what a member can't use, promoting ways to earn, and letting members ask for what they want through a Shopping Muse assistant that answers from the same offer feed.*
 
-**Controls:** `P` presenter panel · `T` flip "The 1 today" vs DY · `L` store-location signal · banner variant **A/B/C** · **Why this?** / **Why this order?** opens the reasoning rail with the sorting-optimiser board.
+**Controls:** `P` presenter panel · `T` flip "The 1 today" vs DY · banner variant **A/B/C** · **Why this?** / **Why this order?** opens the reasoning rail with the sorting-optimiser board.
 
-**Run order:** Ploy first (cold start → real-time), then Nat (value, suppression, location), then the **live persona switch** and the **`T` comparison** for the close.
+**Run order:** Ploy first (cold start → real-time), then Nat (value, suppression, Tops hub), then the **live persona switch** and the **`T` comparison** for the close.
 
 ---
 
@@ -23,25 +23,27 @@
 | 8 | Tap **Get** on Starbucks ฿30 Off → counter becomes 1 → open **My Coupons** → **Use now** → **Mark as used** | "First coupon collected and used; the checklist ticks; the First Coupon mission completes." → *wallet, closed loop* |
 | 9 | **Free Entertainment & Food Perks** → open **Café Amazon Free Iced Americano** (450 pts) | "She's 450 short. Instead of a dead end, DY recommends the mission that earns the gap — **Join challenge**." → *next-best action, gamification* |
 | 10 | **Assistant** → **How does The 1 work?** | "Support and commerce in one assistant: 1 point per ฿25, 8 points = ฿1, partner perks that beat it." → *Muse support/education* |
+| 11 | **Search** → type **gift** | "Broad intent, so results stay in default order — but the assistant offers to narrow it." Tap the gifting card → **For a friend** → free coupons and sub-1,000-point perks. → *gifting guided discovery* |
+| 12 | In the assistant, type **"I have 1,500 points, what can I redeem?"** or tap **How can I earn bonus points this month?** | "Typed or tapped, the answer is built from the feed in real time: price ≤ 1,500, best value per point first; challenges ranked by reward." → *feed-grounded answers* |
 
 **Close:** *"With zero history, DY gave Ploy free value, built her affinity in one session, understood 'coffee', and turned a 'not enough points' moment into a challenge join."*
 
 ---
 
-## PERSONA 2 — Nat · Returning Level 3, weekly Tops shopper *(value + suppression + location)*
+## PERSONA 2 — Nat · Returning Level 3, weekly Tops shopper *(value + suppression + brand hub)*
 *24,850 pts, 3,200 expiring 31 Dec · Tops Central Rama 9 every week · mum of two · Sephora regular · REDZ cardholder · redeemed Starbucks ฿50 two weeks ago · bought a TV six weeks ago.*
 
 | # | Do this | Say this / DY capability |
 |---|---------|--------------------------|
 | 1 | `P` → **Nat**. **Home**: `24,850 Points (≈฿3,106)`, banner *"3,200 points expire on 31 Dec — that's ฿400 off your weekly Tops shop"*. **Only for You** = grocery/beauty/kids by affinity + user margin. **Best value for your points** shelf | "Same screen, different member. Expiry urgency with a *personal* use for the points. And look at what is **not** here: the Starbucks coupon she redeemed, the Tops ฿20 already in her wallet, Power Buy electronics (she just bought a TV), and 'Apply Card' offers (she's a cardholder)." → *expiry trigger, affinity + margin sort, suppression rules, cadence suppression* |
 | 2 | Tap **Why this?** → scroll the **Sorting optimiser** board | "Every position is explainable: affinity, user margin, popularity, urgency — and the list of what the rules filtered out." → *Algorithm Studio-style weighted sort, merchandising rules* |
-| 3 | Tap the **Tops** brand bubble → **Tops hub** | "Her pain point today: this page is newest-first, so Tops Online coupons sit on top for someone who only shops in store." Press **`T`** → *The 1 today*: Tops Online on top, wallet item still shown. Press **`T`** again → DY order. → *brand-hub dynamic sorting, compare* |
-| 4 | Press **`L`** (store-location signal) | "Her phone says she's inside Tops Central Rama 9. The hub re-sorts: in-store coupons first with **Use here**, online-only ones hidden. Back on Home the banner is now location-triggered, and the wallet floats her Tops coupon to the top." → *moment-of-purchase personalisation* |
-| 5 | **Why this order?** on the hub | "Store location is now the heaviest factor; online-only coupons are excluded by rule." |
-| 6 | **Redeem Cash** (header button) | "8 points = ฿1 is the universal rate — but partner perks beat it. The custom algorithm ranks by value per point: Starbucks tall drink at 5.5, movie ticket at 5.4… the expiry banner says exactly how much she'd lose." → *user-margin custom algorithm, expiry urgency* |
-| 7 | **Challenge** tab | "Her targeted Weekly Shopper mission is pinned; the joined Tops challenge shows ฿3,850 of ฿5,000 — this week's shop finishes it." → *personal items on top, progress personalisation* |
-| 8 | **Assistant** → proactive nudge (location-aware if `L` is on) → **Use my expiring points** | "Muse opens with the business problem and answers with value-ranked perks within her balance." Then type **"we are going to the movies this weekend"** → family movie plan. → *proactive engagement, intent detection* |
-| 9 | Tap **What can I use at Tops this week?** → **Open Tops hub** | "Redeemed-aware and wallet-aware answers that route straight into the store." |
+| 3 | Tap the **Tops** brand bubble → **Tops hub** | "Her pain point today: this page is newest-first, so Tops Online coupons sit on top for someone who only shops in store." Press **`T`** → *The 1 today*: Tops Online on top, wallet item still shown. Press **`T`** again → DY order: in-store Tops coupons she uses first. → *brand-hub dynamic sorting, compare* |
+| 4 | **Why this order?** on the hub | "Affinity and user margin drive the order; wallet, redeemed and out-of-stock coupons are excluded by rule." |
+| 5 | **Redeem Cash** (header button) | "8 points = ฿1 is the universal rate — but partner perks beat it. The custom algorithm ranks by value per point: Starbucks tall drink at 5.5, movie ticket at 5.4… the expiry banner says exactly how much she'd lose." → *user-margin custom algorithm, expiry urgency* |
+| 6 | **Challenge** tab | "Her targeted Weekly Shopper mission is pinned; the joined Tops challenge shows ฿3,850 of ฿5,000 — this week's shop finishes it." → *personal items on top, progress personalisation* |
+| 7 | **Assistant** → proactive nudge → **Use my expiring points** | "Muse opens with the business problem and answers with value-ranked perks within her balance." Then type **"we are going to the movies this weekend"** → family movie plan. → *proactive engagement, intent detection* |
+| 8 | Tap **What free coupons can I get at Tops this week?** (shared prompt row) | "Built live from the feed: brand = Tops, price = 0, valid this week — and it skips the Tops ฿20 already in her wallet." Then **I'm buying a laptop at Power Buy, any discounts?** → biggest discount first + the Power Buy challenge. → *feed-grounded brand answers* |
+| 9 | Tap **Which coupons expire soon?** → then **What can I use at Tops this week?** → **Open Tops hub** | "valid_until drives urgency; redeemed-aware and wallet-aware answers route straight into the store." |
 | 10 | **Account** | "Level 3 benefits, progress to The 1 Exclusive, and the offline transactions (Tops, Sephora, Power Buy) that feed her affinity." → *level-aware content, offline data* |
 
 **Close:** *"A six-year member finally sees the Tops coupons she can actually use, is told what her expiring points are worth, and never sees what she already has."*
@@ -52,6 +54,6 @@
 Stay on **Home** or the **Tops hub** and press `P` → switch **Ploy ↔ Nat**: header, banner, shelves, chips, assistant prompts and benefits all change instantly. Then press **`T`** on any list: *The 1 today* vs *Dynamic Yield* side by side.
 
 ## Mapping to what The 1 asked for
-Dynamic sorting of hubs/PLPs by 1:1 real-time affinity ✓ · User-margin custom algorithm (highest discount, lowest points) ✓ · Merchandising rules (OOS, points, level, redeemed, quota-style wallet) ✓ · Personal items pinned on top ✓ · Store location at the moment of purchase ✓ · Gamification promoted for low-balance members ✓ · Running-out / expiring urgency ✓ · Loyalty-level content ✓ · Banner personalisation + generative variants ✓ · Smarter search + Muse hand-off ✓ · Shopping Muse support + guided discovery ✓ · Why-shown transparency with live signals ✓ · API-first fit: DY sorts/filters, The 1 keeps its own UI (this prototype *is* that UI) ✓
+Dynamic sorting of hubs/PLPs by 1:1 real-time affinity ✓ · User-margin custom algorithm (highest discount, lowest points) ✓ · Merchandising rules (OOS, points, level, redeemed, quota-style wallet) ✓ · Personal items pinned on top ✓ · Gamification promoted for low-balance members ✓ · Running-out / expiring urgency ✓ · Loyalty-level content ✓ · Banner personalisation + generative variants ✓ · Smarter search + Muse hand-off (incl. gifting) ✓ · Shopping Muse support + guided discovery with the ten agreed prompts, typed or tapped ✓ · Why-shown transparency with live signals ✓ · API-first fit: DY sorts/filters, The 1 keeps its own UI (this prototype *is* that UI) ✓
 
 *All figures are illustrative demo data.*

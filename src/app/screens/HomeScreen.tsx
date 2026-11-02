@@ -9,7 +9,7 @@ import { Carousel, HomeSection, WhyButton } from '@/components/offers/Primitives
 import { Icon } from '@/components/ui/Icon';
 import { Disclaimer } from '@/components/ui/Card';
 import { settings } from '@/mock-data/settings';
-import { brandStyle, catalogue, topsHubOffers } from '@/mock-data/offers';
+import { brandStyle, catalogue } from '@/mock-data/offers';
 import { primaryReason, topSessionAffinity } from '@/services/sortEngine';
 import {
   bestValue,
@@ -17,7 +17,6 @@ import {
   dealsForHome,
   insuranceForHome,
   liveBanner,
-  locationBanner,
   onlyForYou,
   onlyForYouFull,
   perksForHome,
@@ -71,14 +70,13 @@ function BrandRow() {
   );
 }
 
-/** DY personalised banner — persona variant, or a live-generated one from in-session affinity / location. */
+/** DY personalised banner — persona variant, or a live-generated one from in-session affinity. */
 function HeroBanner() {
-  const { appUserProfile, bannerIndex, goToChapter, openWhy, openBrand, sessionAffinity, location, setActiveChip, rankContext, trackAffinity } = useDemo();
+  const { appUserProfile, bannerIndex, goToChapter, openWhy, openBrand, sessionAffinity, setActiveChip, trackAffinity } = useDemo();
   const p = appUserProfile;
   const live = p.homeVariant === 'newMember' ? topSessionAffinity(sessionAffinity) : null;
   const liveB = live ? liveBanner(live) : null;
-  const usableHere = location ? topsHubOffers().filter((o) => o.brandId === location.brandId && o.channel.includes('In-store') && o.pointsCost <= rankContext.points && !rankContext.walletIds.has(o.id)).length : 0;
-  const banner: (Banner & { chip?: string }) | undefined = location ? locationBanner(location.store, location.branch, usableHere) : liveB ?? p.bannerVariants[bannerIndex];
+  const banner: (Banner & { chip?: string }) | undefined = liveB ?? p.bannerVariants[bannerIndex];
   if (!banner) return null;
 
   const go = () => {
@@ -118,7 +116,7 @@ function HeroBanner() {
         </button>
         <span className="flex items-center gap-1 text-[10px] font-medium opacity-80">
           <Icon name="auto_awesome" className="text-[12px]" />
-          {live || location ? 'Generated live' : 'Personalised'}
+          {live ? 'Generated live' : 'Personalised'}
         </span>
       </div>
     </motion.section>
@@ -245,7 +243,7 @@ function Shelf({ def }: { def: HomeSectionDef }) {
 
 /** Chapter 1 — The 1 home. */
 export function HomeScreen() {
-  const { appUserProfile, location, openBrand, rankContext, setRanking } = useDemo();
+  const { appUserProfile, openBrand, rankContext, setRanking } = useDemo();
   const p = appUserProfile;
 
   useEffect(() => {
@@ -260,7 +258,7 @@ export function HomeScreen() {
         <BrandRow />
         <HeroBanner />
         {p.homeVariant === 'newMember' && <OnboardingCard />}
-        {p.expiringPoints && !location && (
+        {p.expiringPoints && (
           <button type="button" onClick={() => openBrand('tops')} className="flex items-center gap-3 rounded-2xl bg-white p-3 text-left shadow-card">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-fixed text-primary">
               <Icon name="hourglass_top" className="text-[22px]" />

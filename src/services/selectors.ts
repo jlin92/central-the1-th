@@ -132,20 +132,4 @@ function offerCategoryForBrand(brandId: string): string | undefined {
   return catalogue.find((o) => o.brandId === brandId && o.offerType === 'Coupon')?.category;
 }
 
-/** Location banner when the member is detected in store. */
-export function locationBanner(store: string, branch: string, usable: number): Banner {
-  return {
-    id: 'live-location',
-    eyebrow: `You’re at ${store} ${branch}`,
-    title: `${usable} coupon${usable === 1 ? '' : 's'} you can use at checkout right now`,
-    body: 'In-store coupons first, online-only ones hidden. Show your QR to apply them.',
-    cta: `Show my ${store} coupons`,
-    chapter: chapterIdByKey('brand'),
-    brandId: 'tops',
-    tone: 'gold',
-    icon: 'location_on',
-    note: 'Triggered by the store-location signal passed from The 1 app; the hub re-sorts for the moment of purchase.',
-  };
-}
-
 export const offerById = offer;

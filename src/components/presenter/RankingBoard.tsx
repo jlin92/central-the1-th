@@ -8,7 +8,6 @@ const factorColour: Record<string, string> = {
   affinity: 'bg-primary',
   margin: 'bg-the1-gold',
   popularity: 'bg-[#6b6b73]',
-  location: 'bg-success',
   urgency: 'bg-warning',
   gamification: 'bg-[#7b2ff7]',
 };

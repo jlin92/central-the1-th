@@ -179,6 +179,13 @@ export const chipAffinity: Record<string, string> = {
 
 /** Synonyms that make "smart search" understand intent words, incl. Thai. */
 const synonyms: Record<string, string[]> = {
+  gift: ['gift', 'jewelry', 'dessert', 'spa', 'perfume', 'luxury'],
+  gifts: ['gift', 'jewelry', 'dessert', 'spa', 'perfume', 'luxury'],
+  gifting: ['gift', 'jewelry', 'dessert', 'spa', 'perfume', 'luxury'],
+  present: ['gift', 'jewelry', 'dessert', 'spa'],
+  birthday: ['gift', 'dessert', 'cake', 'jewelry'],
+  anniversary: ['gift', 'jewelry', 'dinner', 'spa', 'hotel'],
+  ของขวัญ: ['gift', 'jewelry', 'dessert', 'spa'],
   coffee: ['coffee', 'cafe', 'กาแฟ', 'latte', 'americano', 'espresso', 'cappuccino'],
   กาแฟ: ['coffee', 'cafe', 'กาแฟ'],
   cafe: ['coffee', 'cafe'],
@@ -234,6 +241,16 @@ export function searchOffers(q: string): { exact: Offer[]; semantic: Offer[] } {
   const semantic = catalogue.filter((o) => !seen.has(o.id) && o.tags.some((t) => terms.includes(t)));
   return { exact, semantic };
 }
+
+/** Queries where the assistant should offer guided help rather than a plain list. */
+export const isGiftQuery = (q: string): boolean => /(gift|present|birthday|anniversary|ของขวัญ)/i.test(q);
+
+/** Most-collected free coupons — the default order when a query matches nothing. */
+export const popularCoupons = (n = 8): Offer[] =>
+  catalogue
+    .filter((o) => o.offerType === 'Coupon' && o.inStock)
+    .sort((a, b) => b.redemptions - a.redemptions)
+    .slice(0, n);
 
 /** User-margin: how many points buy ฿1 of value. Lower is better; 8 is the universal benchmark. */
 export function pointsPerBaht(o: Offer): number | null {
