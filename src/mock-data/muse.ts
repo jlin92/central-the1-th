@@ -1,10 +1,11 @@
-import type { AppUserId, MusePrompt, MuseReply, Offer, ProactiveNudge } from '@/types';
-import { catalogue, pointsPerBaht } from '@/mock-data/offers';
+import type { AppUserId, MusePrompt, MuseReply, Offer, ProactiveNudge, Tier } from '@/types';
+import { catalogue, expandQuery, pointsPerBaht } from '@/mock-data/offers';
 import { daysUntil, formatPoints, formatThb, shortDate } from '@/hooks/utils';
 
 /** Live member state the dynamic resolvers need. */
 export interface MuseContext {
   points: number;
+  tier: Tier;
   walletIds: Set<string>;
   redeemedIds: Set<string>;
   joinedIds: Set<string>;
@@ -13,6 +14,8 @@ export interface MuseContext {
   hasRedzCard: boolean;
   affinities: Record<string, number>;
 }
+
+const tierRank: Record<Tier, number> = { 'Level 1': 1, 'Level 2': 2, 'Level 3': 3, 'The 1 Exclusive': 4 };
 
 /* ================================================================== */
 /* PERSONA 1 — Ploy · NEW MEMBER (education + free value + earn)       */
@@ -154,7 +157,7 @@ const natScripts: Record<string, MuseReply> = {
   },
   tops: {
     kind: 'commerce',
-    text: 'For your Tops shop this week, these in-store coupons are usable at Central Rama 9. I’ve skipped Tops Online coupons and the ฿20 one already in your wallet.',
+    text: 'For your weekly Tops shop, these are the in-store coupons worth collecting. I’ve skipped Tops Online coupons — you shop in store — and the ฿20 one already in your wallet.',
     chips: ['Weekly Tops shopper', 'In-store only', 'Wallet-aware'],
     results: ['300006', '300007', '300005', '200077'],
     reasons: ['Best ratio for a ฿800+ basket', 'For a big monthly shop', 'Quick top-up shop', 'Pay with The 1 Phrom Pay'],
@@ -333,7 +336,12 @@ const commonRules: { match: RegExp; key: string }[] = [
 const brandNames = [...new Set(catalogue.map((o) => o.brand))].sort((a, b) => b.length - a.length);
 const brandIn = (text: string) => brandNames.find((b) => text.toLowerCase().includes(b.toLowerCase()));
 
-const usable = (o: Offer, ctx: MuseContext) => o.inStock && daysUntil(o.validUntil) >= 0 && !ctx.walletIds.has(o.id) && !ctx.redeemedIds.has(o.id);
+const usable = (o: Offer, ctx: MuseContext) =>
+  o.inStock &&
+  daysUntil(o.validUntil) >= 0 &&
+  !ctx.walletIds.has(o.id) &&
+  !ctx.redeemedIds.has(o.id) &&
+  (!o.memberLevel.startsWith('Level') || tierRank[ctx.tier] >= Number(o.memberLevel.replace('Level ', '')));
 const value = (o: Offer) => (o.discountThb && o.minSpendThb ? o.discountThb / o.minSpendThb : 0);
 const ids = (list: Offer[]) => list.map((o) => o.id);
 
@@ -518,6 +526,51 @@ function resolveDynamic(userId: AppUserId, text: string, ctx: MuseContext): { re
   return null;
 }
 
+/**
+ * Everyday phrasing — "anything free?", "freebies", "any promo?", "โปร", "cheap deals",
+ * "what's good", "dessert deals" — answered with the member's best free coupons,
+ * narrowed to a topic when one is mentioned, their own brands first. Runs after
+ * every specific rule so it never shadows them.
+ */
+const casualWords = /\b(free|freebies?|promo(tion)?s?|sale|cheap|bargain|what'?s good|recommend|suggest|anything good|best deals?|deals?|offers?|discounts?|coupons?)\b|โปร|ฟรี|คูปอง|ลดราคา/;
+const noise = new Set(['any', 'anything', 'show', 'me', 'find', 'the', 'a', 'an', 'for', 'some', 'good', 'best', 'deals', 'deal', 'offers', 'offer', 'discounts', 'discount', 'coupons', 'coupon', 'free', 'freebies', 'promo', 'promos', 'promotion', 'sale', 'cheap', 'bargain', 'whats', "what's", 'is', 'there', 'got', 'have', 'you', 'i', 'want', 'need', 'please', 'recommend', 'suggest', 'something', 'stuff', 'things', 'ideas', 'on', 'at', 'in', 'my', 'and', 'or', 'to']);
+
+function resolveGeneric(text: string, ctx: MuseContext): { reply: MuseReply; intent: string } | null {
+  const t = text.toLowerCase();
+  const casual = casualWords.test(t);
+  // Brand affinity outweighs category affinity so a weekly Tops shopper sees Tops before Tops Online.
+  const aff = (o: Offer) => Math.max((ctx.affinities[o.category] ?? 0) * 0.6, ctx.affinities[`brand:${o.brandId}`] ?? 0);
+  const topicWords = t.replace(/[?!.,]/g, '').split(/\s+/).filter((w) => w && !noise.has(w));
+  // Try each word as typed, pluralised and singularised so "shoe" finds "shoes".
+  const terms = topicWords.length ? expandQuery(topicWords.flatMap((w) => [w, `${w}s`, w.replace(/s$/, '')]).join(' ')) : [];
+  const all = catalogue.filter((o) => o.offerType === 'Coupon' && o.pointsCost === 0 && usable(o, ctx));
+  const topical = terms.length ? all.filter((o) => o.tags.some((x) => terms.includes(x)) || terms.includes(o.category.toLowerCase())) : [];
+  // A bare topic ("kids stuff") counts; otherwise we need a deal-ish word to avoid answering random text.
+  if (!casual && !topical.length) return null;
+  const pool = topical.length ? topical : all;
+  const list = pool
+    .sort((a, b) => aff(b) - aff(a) || value(b) - value(a) || b.redemptions - a.redemptions)
+    .filter((o, i, arr) => arr.findIndex((x) => x.brandId === o.brandId) === i)
+    .slice(0, 4);
+  const personal = list.some((o) => aff(o) > 0);
+  const topic = topical.length ? topicWords.join(' ') : null;
+  return {
+    intent: topic ? `casual:${topic}` : 'freebies',
+    reply: {
+      kind: 'commerce',
+      text: topic
+        ? `${topic.charAt(0).toUpperCase() + topic.slice(1)} — these are free to collect${personal ? ', your brands first' : ''}. Show your QR at checkout and the discount applies:`
+        : personal
+          ? 'Plenty. These are free to collect and lean towards the brands you already shop — show your QR at checkout and the discount applies:'
+          : 'Plenty — coupons here cost nothing to collect. These are the best-value ones right now; show your QR at checkout and the discount applies:',
+      chips: ['price = 0', ...(topic ? [`Intent: ${topic}`] : []), personal ? 'Your brands first' : 'Most collected'],
+      results: ids(list),
+      reasons: list.map((o) => (aff(o) >= 0.4 ? `${o.brand} · one of your brands` : o.discountThb && o.minSpendThb ? `${formatThb(o.discountThb)} off ${formatThb(o.minSpendThb)} · ${Math.round(value(o) * 100)}%` : o.subtitle ?? '')),
+      followups: ['Which coupons expire soon?', ctx.points > 0 ? 'What can I redeem with my points?' : 'How does The 1 work?', 'Help me find a gift'],
+    },
+  };
+}
+
 /* ================================================================== */
 /* Exports                                                             */
 /* ================================================================== */
@@ -550,7 +603,6 @@ export const musePromptsByUser: Record<AppUserId, MusePrompt[]> = {
  *  - "redeem with my points" needs a balance;
  *  - Tops / earn prompts are hidden where the persona already has a richer
  *    version of the same question;
- *  - "my dog" only appears with a Pet affinity (an assumption otherwise);
  *  - the Central App prompt follows the member's strongest category.
  */
 export function commonPromptsFor(userId: AppUserId, ctx: MuseContext): { label: string; icon: string }[] {
@@ -561,7 +613,6 @@ export function commonPromptsFor(userId: AppUserId, ctx: MuseContext): { label: 
     { label: 'Any free movie or food perks?', icon: 'theaters', show: true },
     { label: "I'm buying a laptop at Power Buy, any discounts?", icon: 'laptop_mac', show: true },
     { label: 'How can I earn bonus points this month?', icon: 'flag', show: userId !== 1 },
-    { label: 'Show me deals for my dog', icon: 'pets', show: (ctx.affinities.Pet ?? 0) > 0 },
     { label: "I'm traveling next month, any insurance deals?", icon: 'flight', show: true },
     { label: 'Which coupons expire soon?', icon: 'hourglass_top', show: true },
     { label: `Best ${cat} deals on Central App`, icon: cat === 'beauty' ? 'spa' : cat === 'electronics' ? 'devices' : 'checkroom', show: true },
@@ -603,7 +654,7 @@ export function replyForIntent(userId: AppUserId, intent: string): MuseReply {
 
 /**
  * Resolve an assistant reply for free-typed text. Order: feed-driven dynamic
- * answers → shared prompts → persona-specific scripts → fallback.
+ * answers → shared prompts → persona-specific scripts → everyday phrasing → fallback.
  */
 export function replyForText(userId: AppUserId, text: string, ctx: MuseContext): { reply: MuseReply; intent?: string } {
   const dyn = resolveDynamic(userId, text, ctx);
@@ -612,6 +663,8 @@ export function replyForText(userId: AppUserId, text: string, ctx: MuseContext):
   if (common) return { reply: adaptToBalance(commonScripts[common.key], ctx), intent: common.key };
   const rule = rulesByUser[userId]?.find((r) => r.match.test(text));
   if (rule) return { reply: scriptsByUser[userId][rule.key], intent: rule.key };
+  const generic = resolveGeneric(text, ctx);
+  if (generic) return generic;
   return { reply: fallbackByUser[userId] };
 }
 

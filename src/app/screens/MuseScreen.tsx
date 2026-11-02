@@ -18,6 +18,7 @@ export function MuseScreen() {
   const nudge = proactiveNudgeByUser[appUser];
   const museCtx: MuseContext = {
     points: rankContext.points,
+    tier: appUserProfile.tier,
     walletIds: rankContext.walletIds,
     redeemedIds: rankContext.redeemedIds,
     joinedIds: rankContext.joinedIds,

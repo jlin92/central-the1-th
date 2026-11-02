@@ -24,7 +24,7 @@
 | 9 | **Free Entertainment & Food Perks** → open **Café Amazon Free Iced Americano** (450 pts) | "She's 450 short. Instead of a dead end, DY recommends the mission that earns the gap — **Join challenge**." → *next-best action, gamification* |
 | 10 | **Assistant** → **How does The 1 work?** | "Support and commerce in one assistant: 1 point per ฿25, 8 points = ฿1, partner perks that beat it." → *Muse support/education* |
 | 11 | **Search** → type **gift** | "Broad intent, so results stay in default order — but the assistant offers to narrow it." Tap the gifting card → **For a friend** → free coupons and sub-1,000-point perks. → *gifting guided discovery* |
-| 12 | In the assistant, tap **Any free movie or food perks?** | "Honest and balance-aware: perks cost points and she has none, so it shows the cheapest ones to aim for and the mission that unlocks them. Note what *isn't* suggested to her: 'What can I redeem with my points?' and 'my dog' — no balance, no pet signal." → *persona-aware prompts, feed-grounded answers* |
+| 12 | In the assistant, tap **Any free movie or food perks?** | "Honest and balance-aware: perks cost points and she has none, so it shows the cheapest ones to aim for and the mission that unlocks them. Note what *isn't* suggested to her: 'What can I redeem with my points?' — no balance yet." Then type something casual like **"anything free?"** or **"any promo?"** → free coupons, her brands first. → *persona-aware prompts, everyday language* |
 
 **Close:** *"With zero history, DY gave Ploy free value, built her affinity in one session, understood 'coffee', and turned a 'not enough points' moment into a challenge join."*
 
