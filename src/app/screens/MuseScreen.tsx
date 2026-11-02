@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useDemo } from '@/app/DemoContext';
 import type { MuseMessage, MuseReply } from '@/types';
-import { commonPrompts, intentAffinity, musePromptsByUser, proactiveNudgeByUser, replyForIntent, replyForText, type MuseContext } from '@/mock-data/muse';
+import { commonPromptsFor, intentAffinity, musePromptsByUser, proactiveNudgeByUser, replyForIntent, replyForText, type MuseContext } from '@/mock-data/muse';
 import { offers } from '@/mock-data/offers';
 import { OfferCard } from '@/components/offers/OfferCard';
 import { Icon } from '@/components/ui/Icon';
@@ -13,10 +13,19 @@ const nextId = () => `m-${++msgSeq}`;
 
 /** Chapter 9 — The 1 assistant (Shopping Muse): support + guided offer discovery. */
 export function MuseScreen() {
-  const { appUser, goToChapter, openBrand, trackAffinity, musePrefill, clearMusePrefill, rankContext } = useDemo();
+  const { appUser, appUserProfile, goToChapter, openBrand, trackAffinity, musePrefill, clearMusePrefill, rankContext, joined } = useDemo();
   const prompts = musePromptsByUser[appUser];
   const nudge = proactiveNudgeByUser[appUser];
-  const museCtx: MuseContext = { points: rankContext.points, walletIds: rankContext.walletIds, redeemedIds: rankContext.redeemedIds, joinedIds: rankContext.joinedIds };
+  const museCtx: MuseContext = {
+    points: rankContext.points,
+    walletIds: rankContext.walletIds,
+    redeemedIds: rankContext.redeemedIds,
+    joinedIds: rankContext.joinedIds,
+    joined,
+    hasRedzCard: appUserProfile.hasRedzCard,
+    affinities: appUserProfile.affinities,
+  };
+  const commonPrompts = commonPromptsFor(appUser, museCtx);
   const [messages, setMessages] = useState<MuseMessage[]>([]);
   const [typing, setTyping] = useState(false);
   const [input, setInput] = useState('');

@@ -8,6 +8,10 @@ export interface MuseContext {
   walletIds: Set<string>;
   redeemedIds: Set<string>;
   joinedIds: Set<string>;
+  /** THB progress on joined challenges. */
+  joined: Record<string, number>;
+  hasRedzCard: boolean;
+  affinities: Record<string, number>;
 }
 
 /* ================================================================== */
@@ -238,14 +242,6 @@ const natRules: { match: RegExp; key: string }[] = [
 /* ================================================================== */
 
 const commonScripts: Record<string, MuseReply> = {
-  'perks-free': {
-    kind: 'commerce',
-    text: 'Yes — these movie and food perks are redeemed with points, no cash. Best value per point first:',
-    chips: ['Free Entertainment & Food Perks', 'Points only'],
-    results: ['200119', '200118', '200123', '200121'],
-    reasons: ['Free 2D ticket · 5.4 pts per ฿1', 'Free tall drink · 5.5 pts per ฿1', 'Free 2-piece chicken · 560 pts', 'Popcorn combo · 650 pts'],
-    followups: ['I have 1,500 points, what can I redeem?', 'How can I earn bonus points this month?'],
-  },
   'pet': {
     kind: 'commerce',
     text: 'For your dog: Pet ’N Me coupons are free to collect, and the Pet ’N Me challenge turns the next big bag of food into bonus points.',
@@ -256,19 +252,11 @@ const commonScripts: Record<string, MuseReply> = {
   },
   'insurance': {
     kind: 'commerce',
-    text: 'Travelling next month? The 1 Insure has travel cover deals, and a hotel perk if you’d like to use points on the trip itself:',
+    text: 'Travelling next month? The 1 Insure has travel cover deals — and if you have the points, a hotel perk for the trip itself:',
     chips: ['Brand: The 1 Insure', 'Travel'],
     results: ['200171', '200174', '200172', '200141'],
     reasons: ['฿300 off at ELEMENTS', 'Annual plan · ฿500 off', 'Earn x3 points on the premium', 'Centara Hua Hin · 1 night with points'],
-    followups: ['Any free movie or food perks?', 'Show me gift ideas'],
-  },
-  'fashion-app': {
-    kind: 'commerce',
-    text: 'The best fashion deals on Central App right now — on-top discounts and point multipliers you only get in the app:',
-    chips: ['Central App Extra Discounts', 'Category: Fashion'],
-    results: ['200149', '200147', '200145', '200150'],
-    reasons: ['On-top ฿500 off ฿2,500', 'On-top ฿300 off ฿1,500', 'On-top ฿250 off ฿1,250', 'x10 points'],
-    followups: ['Show me gift ideas', 'Which coupons expire soon?'],
+    followups: ['Any free movie or food perks?', 'Help me find a gift'],
   },
   gift: {
     kind: 'support',
@@ -280,32 +268,32 @@ const commonScripts: Record<string, MuseReply> = {
     kind: 'commerce',
     text: 'For your partner — jewellery and a treat, with the Pandora coupon free to collect:',
     chips: ['Gift · partner', 'Best value first'],
-    results: ['300023', '200151', '200139', '200133'],
-    reasons: ['Free coupon · ฿300 off ฿2,500', 'Central App · on-top ฿500', '30-min massage · 1,000 pts', 'Shibuya toast date · 1,700 pts'],
+    results: ['300023', '200151', '200139', '200133', '300022', '300021'],
+    reasons: ['Free coupon · ฿300 off ฿2,500', 'Central App · on-top ฿500', '30-min massage · 1,000 pts', 'Shibuya toast date · 1,700 pts', 'Free coupon · Charles & Keith ฿200 off', 'Free coupon · Coach ฿1,500 off'],
     followups: ['For a friend', 'A gift under 1,000 points', 'Which coupons expire soon?'],
   },
   'gift-friend': {
     kind: 'commerce',
     text: 'For a friend — small, thoughtful and good value:',
     chips: ['Gift · friend', 'Best value first'],
-    results: ['200118', '300022', '200124', '300014'],
-    reasons: ['Free tall drink · 800 pts', 'Free coupon · Charles & Keith ฿200 off', '6 donuts · 1,000 pts', 'Free coupon · Brown Cafe'],
+    results: ['200118', '300022', '200124', '300014', '200187', '300015'],
+    reasons: ['Free tall drink · 800 pts', 'Free coupon · Charles & Keith ฿200 off', '6 donuts · 1,000 pts', 'Free coupon · Brown Cafe', 'Free coupon · Mister Donut ฿20 off', 'Free coupon · Segafredo ฿25 off'],
     followups: ['For my partner', 'For my mum', 'A gift under 1,000 points'],
   },
   'gift-mum': {
     kind: 'commerce',
     text: 'For your mum — beauty and a little pampering:',
     chips: ['Gift · mum', 'Best value first'],
-    results: ['300018', '200153', '200139', '200138'],
-    reasons: ['Free coupon · Beauty Galerie ฿300 off', 'Central App · Estée Lauder ฿300', 'Cenvaree massage · 1,000 pts', 'Seafood buffet for two · 10,990 pts'],
+    results: ['300018', '200153', '200139', '200138', '200189', '200048'],
+    reasons: ['Free coupon · Beauty Galerie ฿300 off', 'Central App · Estée Lauder ฿300', 'Cenvaree massage · 1,000 pts', 'Seafood buffet for two · 10,990 pts', 'Free coupon · Sephora ฿200 off', 'Free coupon · matsukiyo ฿100 off'],
     followups: ['For my partner', 'For the kids', 'Show me beauty deals'],
   },
   'gift-kids': {
     kind: 'commerce',
     text: 'For the kids — a day out or something to unwrap:',
     chips: ['Gift · kids', 'Best value first'],
-    results: ['300024', '200034', '200143', '200144'],
-    reasons: ['Free coupon · Central Kids ฿200 off', 'Free coupon · B2S ฿30 off', 'SEA LIFE 30% off · 1,600 pts', 'KidZania ฿400 off · 3,200 pts'],
+    results: ['300024', '200034', '200143', '200144', '300025', '200199'],
+    reasons: ['Free coupon · Central Kids ฿200 off', 'Free coupon · B2S ฿30 off', 'SEA LIFE 30% off · 1,600 pts', 'KidZania ฿400 off · 3,200 pts', 'Free coupon · Mothercare ฿300 off', 'Free coupon · Crocs ฿150 off'],
     followups: ['For my partner', 'A gift under 1,000 points'],
   },
   'gift-budget': {
@@ -318,6 +306,18 @@ const commonScripts: Record<string, MuseReply> = {
   },
 };
 
+/**
+ * Shared scripts list more picks than we show; drop what this member can't
+ * redeem yet, then trim to four — so a 0-point member sees free coupons, not
+ * perks she can't afford.
+ */
+function adaptToBalance(reply: MuseReply, ctx: MuseContext): MuseReply {
+  if (!reply.results) return reply;
+  const keep = reply.results.map((id, i) => ({ id, i })).filter(({ id }) => (catalogue.find((o) => o.id === id)?.pointsCost ?? 0) <= ctx.points);
+  const chosen = (keep.length >= 2 ? keep : reply.results.map((id, i) => ({ id, i }))).slice(0, 4);
+  return { ...reply, results: chosen.map((c) => c.id), reasons: reply.reasons ? chosen.map((c) => reply.reasons![c.i]) : undefined, chips: keep.length < reply.results.length && ctx.points < 1000 ? [...(reply.chips ?? []), 'Free to collect'] : reply.chips };
+}
+
 const commonRules: { match: RegExp; key: string }[] = [
   { match: /(for my partner|for my (wife|husband|boyfriend|girlfriend))/i, key: 'gift-partner' },
   { match: /for (a|my) friend/i, key: 'gift-friend' },
@@ -325,10 +325,8 @@ const commonRules: { match: RegExp; key: string }[] = [
   { match: /for (the|my) kids?/i, key: 'gift-kids' },
   { match: /(gift|present).*(under|below|budget|points)/i, key: 'gift-budget' },
   { match: /(gift|present|birthday|anniversary|ของขวัญ)/i, key: 'gift' },
-  { match: /(free )?(movie|film|cinema)( or | and |\/)(food|snack)|perks?\b/i, key: 'perks-free' },
   { match: /(dog|cat|puppy|pet)/i, key: 'pet' },
   { match: /(insurance|travel(l)?ing|trip|flight|cover)/i, key: 'insurance' },
-  { match: /fashion.*(central app|app)|central app.*fashion/i, key: 'fashion-app' },
 ];
 
 /** Catalogue brands, longest name first so "Tops Online" wins over "Tops". */
@@ -341,31 +339,101 @@ const ids = (list: Offer[]) => list.map((o) => o.id);
 
 /**
  * Prompts whose answer depends on live state are built from the feed at the
- * moment they are asked: brand coupons, "I have N points", expiring soon, earn.
+ * moment they are asked: brand coupons, points budget, perks, Central App
+ * deals by category, expiring soon, earn.
  */
 function resolveDynamic(userId: AppUserId, text: string, ctx: MuseContext): { reply: MuseReply; intent: string } | null {
   const t = text.toLowerCase();
+  const redeemable = (o: Offer) => (o.offerType === 'Redeem Points' || o.offerType === 'Redeem Cash') && o.pointsCost > 0 && usable(o, ctx);
+  const byMargin = (a: Offer, b: Offer) => (pointsPerBaht(a) ?? 99) - (pointsPerBaht(b) ?? 99) || b.redemptions - a.redemptions;
 
-  // "I have 1,500 points, what can I redeem?"
+  // "What can I redeem with my points?" (live balance) or "I have 1,500 points, what can I redeem?" (typed budget)
   const pts = t.match(/(\d[\d,]*)\s*(points?|pts)/);
-  if (pts && /(redeem|what can|get|buy|use)/.test(t)) {
-    const budget = Number(pts[1].replace(/,/g, ''));
-    const list = catalogue
-      .filter((o) => (o.offerType === 'Redeem Points' || o.offerType === 'Redeem Cash') && o.pointsCost > 0 && o.pointsCost <= budget && usable(o, ctx))
-      .sort((a, b) => (pointsPerBaht(a) ?? 99) - (pointsPerBaht(b) ?? 99) || b.redemptions - a.redemptions)
-      .slice(0, 4);
-    if (!list.length) return { reply: { kind: 'support', text: `Nothing is redeemable yet at ${formatPoints(budget)} points — the cheapest perk is 450 points. A challenge is the quickest way there.`, action: { label: 'See challenges', chapter: 6 }, followups: ['How can I earn bonus points this month?'] }, intent: 'budget' };
+  const askBudget = (pts && /(redeem|what can|get|buy|use)/.test(t)) || /(redeem|get|use|buy).*(my points|with my points|my balance)|what can i redeem/.test(t);
+  if (askBudget) {
+    const budget = pts ? Number(pts[1].replace(/,/g, '')) : ctx.points;
+    const mine = !pts;
+    const list = catalogue.filter((o) => redeemable(o) && o.pointsCost <= budget).sort(byMargin).slice(0, 4);
+    if (!list.length) {
+      const cheapest = catalogue.filter(redeemable).sort((a, b) => a.pointsCost - b.pointsCost).slice(0, 2);
+      return {
+        intent: 'budget',
+        reply: {
+          kind: 'support',
+          text: `${mine ? `You have ${formatPoints(ctx.points)} points today` : `At ${formatPoints(budget)} points`}, so nothing is redeemable yet — the cheapest perk is ${formatPoints(cheapest[0]?.pointsCost ?? 450)} points. Coupons are free, and a challenge is the quickest way to your first points.`,
+          chips: ['Balance-aware', 'Earn first'],
+          results: ids(cheapest),
+          reasons: cheapest.map((o) => `${formatPoints(o.pointsCost)} pts · first perk to aim for`),
+          action: { label: 'See challenges', chapter: 6 },
+          followups: ['How can I earn bonus points this month?', 'Show me free coupons'],
+        },
+      };
+    }
     return {
       intent: 'budget',
       reply: {
         kind: 'commerce',
-        text: `With ${formatPoints(budget)} points you can redeem these — best value per point first (8 points = ฿1 is the cash benchmark):`,
-        chips: [`Budget: ${formatPoints(budget)} pts`, 'User margin', 'Redeem Points / Redeem Cash'],
+        text: `${mine ? `With your ${formatPoints(ctx.points)} points` : `With ${formatPoints(budget)} points`} you can redeem these — best value per point first (8 points = ฿1 is the cash benchmark):`,
+        chips: [mine ? `Balance: ${formatPoints(ctx.points)} pts` : `Budget: ${formatPoints(budget)} pts`, 'User margin', 'Redeem Points / Redeem Cash'],
         results: ids(list),
         reasons: list.map((o) => `${formatPoints(o.pointsCost)} pts · ${pointsPerBaht(o)} per ฿1${(pointsPerBaht(o) ?? 9) < 8 ? ' · beats cash' : ''}`),
-        followups: ['Any free movie or food perks?', 'How can I earn bonus points this month?', 'Which coupons expire soon?'],
+        followups: ['Any free movie or food perks?', 'Which coupons expire soon?', 'Help me find a gift'],
       },
     };
+  }
+
+  // "Any free movie or food perks?" — honest about points for a 0-balance member.
+  if (/(movie|film|cinema|food|snack).*(perk|free)|(perk|free).*(movie|film|cinema|food|snack)|\bperks?\b/.test(t) && !/coupon/.test(t)) {
+    const perks = catalogue.filter((o) => o.offerType === 'Redeem Points' && (o.category === 'Food & Beverage' || o.tags.some((x) => ['movie', 'cinema', 'popcorn'].includes(x))) && usable(o, ctx));
+    const affordable = perks.filter((o) => o.pointsCost <= ctx.points).sort(byMargin).slice(0, 4);
+    if (affordable.length) {
+      return {
+        intent: 'perks-free',
+        reply: {
+          kind: 'commerce',
+          text: 'Yes — these movie and food perks are redeemed with points, no cash, and all within your balance. Best value per point first:',
+          chips: ['Free Entertainment & Food Perks', `Within ${formatPoints(ctx.points)} pts`],
+          results: ids(affordable),
+          reasons: affordable.map((o) => `${formatPoints(o.pointsCost)} pts · ${pointsPerBaht(o)} per ฿1`),
+          followups: ['What can I redeem with my points?', 'Help me find a gift'],
+        },
+      };
+    }
+    const cheapest = perks.sort((a, b) => a.pointsCost - b.pointsCost).slice(0, 3);
+    const starter = catalogue.find((o) => o.id === '300033' && !ctx.joinedIds.has(o.id)) ?? catalogue.find((o) => o.id === '300032');
+    return {
+      intent: 'perks-free',
+      reply: {
+        kind: 'commerce',
+        text: `Perks like free movie tickets and drinks are redeemed with points — you have ${formatPoints(ctx.points)} today, so none are unlocked yet. These are the cheapest to aim for, and the challenge below gets you there fastest. Coupons, meanwhile, are free to collect.`,
+        chips: ['Balance-aware', 'Earn first', 'Cheapest perks'],
+        results: ids([...cheapest, ...(starter ? [starter] : [])]),
+        reasons: [...cheapest.map((o) => `${formatPoints(o.pointsCost)} pts · ${formatPoints(o.pointsCost - ctx.points)} to go`), ...(starter ? [`+${formatPoints(starter.rewardPoints ?? 0)} pts · ${starter.subtitle}`] : [])],
+        action: { label: 'See challenges', chapter: 6 },
+        followups: ['Show me free coupons', 'How does The 1 work?'],
+      },
+    };
+  }
+
+  // "Best fashion / beauty / electronics deals on Central App"
+  if (/central app|the app/.test(t)) {
+    const cat = /beauty|skincare|makeup/.test(t) ? 'Beauty' : /electronic|tech|tv|gadget|appliance/.test(t) ? 'Electronics' : 'Fashion';
+    const list = catalogue
+      .filter((o) => o.offerType === 'Central App Deal' && o.category === cat && usable(o, ctx))
+      .sort((a, b) => (b.discountThb ?? 0) / (b.minSpendThb ?? 1) - (a.discountThb ?? 0) / (a.minSpendThb ?? 1) || (b.multiplier ?? 0) - (a.multiplier ?? 0))
+      .slice(0, 4);
+    if (list.length)
+      return {
+        intent: `app-${cat.toLowerCase()}`,
+        reply: {
+          kind: 'commerce',
+          text: `The best ${cat.toLowerCase()} deals on Central App right now — on-top discounts and point multipliers you only get in the app:`,
+          chips: ['Central App Extra Discounts', `Category: ${cat}`],
+          results: ids(list),
+          reasons: list.map((o) => (o.multiplier ? `x${o.multiplier} The 1 points` : `On-top ${formatThb(o.discountThb ?? 0)} off ${formatThb(o.minSpendThb ?? 0)}`)),
+          followups: ['Help me find a gift', 'Which coupons expire soon?'],
+        },
+      };
   }
 
   // "Which coupons expire soon?"
@@ -390,22 +458,30 @@ function resolveDynamic(userId: AppUserId, text: string, ctx: MuseContext): { re
     };
   }
 
-  // "How can I earn bonus points this month?"
+  // "How can I earn bonus points this month?" — acknowledges a mission already in progress.
   if (/(earn|bonus|more points|x\d|multiplier)/.test(t) && !/(expir|redeem)/.test(t)) {
     const list = catalogue
       .filter((o) => o.offerType === 'Challenge' && !ctx.joinedIds.has(o.id) && daysUntil(o.validUntil) >= 0)
       .sort((a, b) => (b.multiplier ? 10000 : b.rewardPoints ?? 0) - (a.multiplier ? 10000 : a.rewardPoints ?? 0))
       .slice(0, 4);
+    const inProgress = Object.entries(ctx.joined)
+      .map(([id, spent]) => ({ o: catalogue.find((c) => c.id === id), spent }))
+      .find((x) => x.o?.minSpendThb && x.spent < x.o.minSpendThb && x.spent > 0);
+    const lead = inProgress?.o
+      ? `You’re ${formatThb(inProgress.o.minSpendThb! - inProgress.spent)} from finishing the ${inProgress.o.brand} challenge (+${formatPoints(inProgress.o.rewardPoints ?? 0)} points) — do that first. Then this month’s biggest earners: `
+      : userId === 1
+        ? 'Fastest way to your first points: '
+        : 'This month’s biggest earners: ';
     return {
       intent: 'earn-bonus',
       reply: {
         kind: 'commerce',
-        text: `${userId === 1 ? 'Fastest way to your first points: ' : 'This month’s biggest earners: '}join a challenge — it’s free — and bonus points land on top of what you earn anyway.`,
-        chips: ['offer_type = Challenge', 'reward_points · points_multiplier'],
+        text: `${lead}join a challenge — it’s free — and bonus points land on top of what you earn anyway.`,
+        chips: ['offer_type = Challenge', 'reward_points · points_multiplier', ...(inProgress ? ['Progress-aware'] : [])],
         results: ids(list),
         reasons: list.map((o) => (o.multiplier ? `x${o.multiplier} points on every basket` : `+${formatPoints(o.rewardPoints ?? 0)} bonus · ${o.subtitle}`)),
         action: { label: 'See all challenges', chapter: 6 },
-        followups: ['I have 1,500 points, what can I redeem?', 'Which coupons expire soon?'],
+        followups: [ctx.points > 0 ? 'What can I redeem with my points?' : 'Show me free coupons', 'Which coupons expire soon?'],
       },
     };
   }
@@ -423,14 +499,15 @@ function resolveDynamic(userId: AppUserId, text: string, ctx: MuseContext): { re
     if (!list.length) return null;
     const skipped = catalogue.filter((o) => o.brand === brand && (ctx.walletIds.has(o.id) || ctx.redeemedIds.has(o.id))).length;
     const big = t.match(/(laptop|tv|phone|fridge|sofa|bag|shoes|stroller)/);
+    const redz = ctx.hasRedzCard && big ? ' Pay with your Central The 1 REDZ card and the whole basket earns x3 points.' : '';
     return {
       intent: `brand:${brand}`,
       reply: {
         kind: 'commerce',
         text: big
-          ? `Buying a ${big[1]} at ${brand}? The biggest discount first — stack it with the ${brand} challenge to earn bonus points on the same receipt.`
+          ? `Buying a ${big[1]} at ${brand}? The biggest discount first — stack it with the ${brand} challenge to earn bonus points on the same receipt.${redz}`
           : `Free ${brand} coupons you can collect this week${skipped ? ` (I’ve skipped ${skipped} you already have)` : ''} — best value for a typical basket first:`,
-        chips: [`Brand: ${brand}`, freeOnly ? 'price = 0' : 'discount_thb · min_spend_thb', 'Valid this week'],
+        chips: [`Brand: ${brand}`, freeOnly ? 'price = 0' : 'discount_thb · min_spend_thb', ...(redz ? ['REDZ x3'] : ['Valid this week'])],
         results: ids(list),
         reasons: list.map((o) => (o.offerType === 'Challenge' ? `+${formatPoints(o.rewardPoints ?? 0)} bonus · ${o.subtitle}` : o.discountThb && o.minSpendThb ? `${formatThb(o.discountThb)} off ${formatThb(o.minSpendThb)} · ${Math.round(value(o) * 100)}%` : o.subtitle ?? '')),
         followups: ['Which coupons expire soon?', 'How can I earn bonus points this month?'],
@@ -467,19 +544,31 @@ export const musePromptsByUser: Record<AppUserId, MusePrompt[]> = {
   ],
 };
 
-/** Prompts every member can ask — rendered as a scrolling row and all typeable. */
-export const commonPrompts: { label: string; icon: string }[] = [
-  { label: 'What free coupons can I get at Tops this week?', icon: 'shopping_basket' },
-  { label: 'I have 1,500 points, what can I redeem?', icon: 'currency_exchange' },
-  { label: 'Any free movie or food perks?', icon: 'theaters' },
-  { label: "I'm buying a laptop at Power Buy, any discounts?", icon: 'laptop_mac' },
-  { label: 'How can I earn bonus points this month?', icon: 'flag' },
-  { label: 'Show me deals for my dog', icon: 'pets' },
-  { label: "I'm traveling next month, any insurance deals?", icon: 'flight' },
-  { label: 'Which coupons expire soon?', icon: 'hourglass_top' },
-  { label: 'Best fashion deals on Central App', icon: 'checkroom' },
-  { label: 'Help me find a gift', icon: 'redeem' },
-];
+/**
+ * Shared prompts from The 1's list — all typeable by anyone, but only surfaced
+ * as chips when they make sense for this member:
+ *  - "redeem with my points" needs a balance;
+ *  - Tops / earn prompts are hidden where the persona already has a richer
+ *    version of the same question;
+ *  - "my dog" only appears with a Pet affinity (an assumption otherwise);
+ *  - the Central App prompt follows the member's strongest category.
+ */
+export function commonPromptsFor(userId: AppUserId, ctx: MuseContext): { label: string; icon: string }[] {
+  const cat = (ctx.affinities.Beauty ?? 0) > (ctx.affinities.Fashion ?? 0) && (ctx.affinities.Beauty ?? 0) > (ctx.affinities.Electronics ?? 0) ? 'beauty' : (ctx.affinities.Electronics ?? 0) > (ctx.affinities.Fashion ?? 0) ? 'electronics' : 'fashion';
+  const all: { label: string; icon: string; show: boolean }[] = [
+    { label: 'What free coupons can I get at Tops this week?', icon: 'shopping_basket', show: userId !== 2 },
+    { label: 'What can I redeem with my points?', icon: 'currency_exchange', show: ctx.points > 0 },
+    { label: 'Any free movie or food perks?', icon: 'theaters', show: true },
+    { label: "I'm buying a laptop at Power Buy, any discounts?", icon: 'laptop_mac', show: true },
+    { label: 'How can I earn bonus points this month?', icon: 'flag', show: userId !== 1 },
+    { label: 'Show me deals for my dog', icon: 'pets', show: (ctx.affinities.Pet ?? 0) > 0 },
+    { label: "I'm traveling next month, any insurance deals?", icon: 'flight', show: true },
+    { label: 'Which coupons expire soon?', icon: 'hourglass_top', show: true },
+    { label: `Best ${cat} deals on Central App`, icon: cat === 'beauty' ? 'spa' : cat === 'electronics' ? 'devices' : 'checkroom', show: true },
+    { label: 'Help me find a gift', icon: 'redeem', show: true },
+  ];
+  return all.filter((p) => p.show).map(({ label, icon }) => ({ label, icon }));
+}
 
 export const proactiveNudgeByUser: Record<AppUserId, ProactiveNudge> = {
   1: {
@@ -520,7 +609,7 @@ export function replyForText(userId: AppUserId, text: string, ctx: MuseContext):
   const dyn = resolveDynamic(userId, text, ctx);
   if (dyn) return dyn;
   const common = commonRules.find((r) => r.match.test(text));
-  if (common) return { reply: commonScripts[common.key], intent: common.key };
+  if (common) return { reply: adaptToBalance(commonScripts[common.key], ctx), intent: common.key };
   const rule = rulesByUser[userId]?.find((r) => r.match.test(text));
   if (rule) return { reply: scriptsByUser[userId][rule.key], intent: rule.key };
   return { reply: fallbackByUser[userId] };
@@ -533,7 +622,9 @@ export const intentAffinity: Record<string, string> = {
   dessert: 'Food & Beverage',
   beauty: 'Beauty',
   fashion: 'Fashion',
-  'fashion-app': 'Fashion',
+  'app-fashion': 'Fashion',
+  'app-beauty': 'Beauty',
+  'app-electronics': 'Electronics',
   movie: 'Entertainment',
   'perks-free': 'Entertainment',
   luxury: 'Fashion',
